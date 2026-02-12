@@ -14,6 +14,8 @@ OpenPeon is the home of CESP (Coding Event Sound Pack Specification), an open st
 - Full Spec (markdown): https://github.com/PeonPing/openpeon/blob/main/spec/cesp-v1.md
 - JSON Schema: https://github.com/PeonPing/openpeon/blob/main/spec/openpeon.schema.json
 - Reference Implementation: https://github.com/PeonPing/peon-ping
+- Registry: https://github.com/PeonPing/registry
+- Registry Index: https://peonping.github.io/registry/index.json
 
 ## What is CESP?
 
@@ -142,12 +144,22 @@ There are 36 CESP-compatible sound packs available at https://openpeon.com/packs
 - Age of Mythology (Greek Villager)
 - Warcraft II (Human Peasant)
 
+## Registry
+
+The OpenPeon registry at https://github.com/PeonPing/registry is how packs are discovered and installed.
+
+- The registry index is published at https://peonping.github.io/registry/index.json
+- Each entry in the registry points to an external GitHub repo (owner/repo) plus a release tag
+- Players and IDEs fetch the registry index to list available packs, then download pack assets from the referenced GitHub release
+- Original packs maintained by the PeonPing team live in the https://github.com/PeonPing/og-packs monorepo; community packs are hosted in their own repos
+
 ## Creating a Pack
 
 1. Gather audio files (WAV/MP3/OGG, short clips 1-5 seconds)
-2. Create directory with openpeon.json + sounds/ folder
+2. Create your own GitHub repo with openpeon.json + sounds/ folder
 3. Write manifest mapping sounds to CESP categories
-4. Submit PR to https://github.com/PeonPing/peon-ping
+4. Tag a release (e.g. git tag v1.0.0 && git push --tags)
+5. Submit a PR adding your pack to registry.json at https://github.com/PeonPing/registry
 
 Full guide: https://openpeon.com/create
 

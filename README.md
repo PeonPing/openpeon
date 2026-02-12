@@ -117,18 +117,22 @@ See the [full spec](spec/cesp-v1.md) for details on sound selection, volume cont
 
 ## Examples
 
-- [Orc Peon (Warcraft III)](examples/peon/openpeon.json) — the original peon-ping pack
-- [GLaDOS (Portal)](examples/glados/openpeon.json) — passive-aggressive AI companion
+- [Orc Peon (Warcraft III)](https://github.com/PeonPing/og-packs/tree/main/peon) — the original peon-ping pack
+- [GLaDOS (Portal)](https://github.com/PeonPing/og-packs/tree/main/glados) — passive-aggressive AI companion
+
+All 36 original packs live in [PeonPing/og-packs](https://github.com/PeonPing/og-packs).
 
 ## Registry
 
-The OpenPeon registry is a GitHub-native directory of community sound packs. See [Registry Design](registry-design.md) for the architecture.
+The OpenPeon registry is **live** at [PeonPing/registry](https://github.com/PeonPing/registry). The registry index is published to [peonping.github.io/registry/index.json](https://peonping.github.io/registry/index.json) and currently lists 36 packs.
+
+Packs are hosted in their own repos. The original 36 are in [PeonPing/og-packs](https://github.com/PeonPing/og-packs). See [Registry Design](registry-design.md) for the architecture details.
 
 ## Implementations
 
 | Tool | Status | Link |
 |---|---|---|
-| [peon-ping](https://github.com/PeonPing/peon-ping) (Claude Code) | Reference implementation | 35+ packs |
+| [peon-ping](https://github.com/PeonPing/peon-ping) (Claude Code) | Reference implementation | 36+ packs |
 | *Your IDE here* | — | [Open a PR](https://github.com/PeonPing/openpeon/issues) |
 
 ## Files
@@ -138,9 +142,9 @@ spec/
   cesp-v1.md                  # The specification
   openpeon.schema.json         # JSON Schema for manifests
   registry-entry.schema.json   # JSON Schema for registry entries
-examples/
-  peon/openpeon.json           # Example: Orc Peon pack
-  glados/openpeon.json         # Example: GLaDOS pack
+scripts/
+  generate-registry.ts         # Registry generation script
+site/                           # The openpeon.com website
 registry-design.md             # Registry architecture blueprint
 ```
 

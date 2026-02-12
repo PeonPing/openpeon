@@ -1,12 +1,12 @@
 # OpenPeon Registry Design
 
-**Status:** Planned (not yet implemented)
+**Status:** Live — https://github.com/PeonPing/registry
 
 The OpenPeon registry is a GitHub-native directory of CESP sound packs. No central server. No API. Just git.
 
 ## Architecture
 
-The registry is a single GitHub repository: `github.com/PeonPing/registry` (or `openpeon/registry`).
+The registry is a single GitHub repository: [`PeonPing/registry`](https://github.com/PeonPing/registry).
 
 ### Repository Structure
 
@@ -228,18 +228,17 @@ openpeon install glados
 
 ## Migration from peon-ping
 
-The 35+ existing peon-ping packs will be the initial registry seed. Each pack gets:
+Migration is **complete**. All original peon-ping packs have been moved to the registry:
 
-1. An `openpeon.json` manifest (migrated from `manifest.json`)
-2. A source repo (can be the peon-ping monorepo initially, with individual repos later)
-3. A `registry.json` entry
-
-The peon-ping runtime will support both `openpeon.json` and `manifest.json`, with the CESP format preferred.
+1. All 36 packs have been migrated to `PeonPing/og-packs`
+2. Each pack has an `openpeon.json` manifest
+3. All 36 packs are registered in `PeonPing/registry`
+4. `peon-ping` now fetches packs from the registry at install time
+5. The `packs/` directory has been removed from the `peon-ping` repo
 
 ## Future Considerations
 
 - **CLI tool** (`openpeon submit`) to automate the submission flow
-- **Web UI** for browsing packs (GitHub Pages static site reading `index.json`)
 - **IDE extensions** that provide pack browsing/install UI panels
 - **Pack ratings/stars** via GitHub stars on source repos
 - **Automated content moderation** for audio files (if volume demands it)
