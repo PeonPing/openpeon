@@ -26,6 +26,7 @@ const FRANCHISE_MAP: Record<string, Franchise> = {
   murloc: { name: "Warcraft III", url: "https://liquipedia.net/warcraft/Warcraft_III" },
   wc2_peasant: { name: "Warcraft II", url: "https://liquipedia.net/warcraft/Warcraft_II" },
   wc2_sapper: { name: "Warcraft II", url: "https://liquipedia.net/warcraft/Warcraft_II" },
+  wc2_sappers: { name: "Warcraft II", url: "https://liquipedia.net/warcraft/Warcraft_II" },
   ocarina_of_time: { name: "The Legend of Zelda", url: "https://zelda.nintendo.com" },
   sc_kerrigan: { name: "StarCraft", url: "https://liquipedia.net/starcraft/StarCraft" },
   sc_battlecruiser: { name: "StarCraft", url: "https://liquipedia.net/starcraft/StarCraft" },
