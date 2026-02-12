@@ -148,10 +148,10 @@ git tag v1.0.0 && git push origin v1.0.0`}
             </a>
           </li>
           <li>
-            Create <code className="font-mono text-text-muted">packs/my-pack/registry.json</code> with
-            your pack metadata and source repo info
+            Add your pack entry to <code className="font-mono text-text-muted">index.json</code> (keep
+            alphabetical order)
           </li>
-          <li>Open a pull request</li>
+          <li>Open a pull request — CI will validate your entry</li>
         </ol>
         <p className="text-sm text-text-dim mt-3">
           See the{" "}
@@ -163,7 +163,7 @@ git tag v1.0.0 && git push origin v1.0.0`}
           >
             registry contributing guide
           </a>{" "}
-          for the full registry.json format and submission details.
+          for the full entry format and submission details.
         </p>
       </>
     ),

@@ -159,7 +159,7 @@ The OpenPeon registry at https://github.com/PeonPing/registry is how packs are d
 2. Create your own GitHub repo with openpeon.json + sounds/ folder
 3. Write manifest mapping sounds to CESP categories
 4. Tag a release (e.g. git tag v1.0.0 && git push --tags)
-5. Submit a PR adding your pack to registry.json at https://github.com/PeonPing/registry
+5. Add your pack entry to index.json at https://github.com/PeonPing/registry via PR
 
 Full guide: https://openpeon.com/create
 
