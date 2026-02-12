@@ -88,7 +88,11 @@ const PACKS_SOURCE =
   process.env.PACKS_SOURCE_DIR ||
   path.resolve(SITE_DIR, "../../og-packs");
 const OUTPUT_JSON = path.join(SITE_DIR, "src/data/packs-data.json");
-const OUTPUT_AUDIO = path.join(SITE_DIR, "public/audio");
+
+// Audio served directly from GitHub — no local copy needed
+const OG_PACKS_RAW_BASE =
+  process.env.OG_PACKS_RAW_BASE ||
+  "https://raw.githubusercontent.com/PeonPing/og-packs/v1.0.0";
 
 console.log(`[generate] Reading packs from: ${PACKS_SOURCE}`);
 
@@ -121,7 +125,6 @@ interface PackData {
 }
 
 const packs: PackData[] = [];
-let totalAudioFiles = 0;
 
 for (const dir of packDirs) {
   const packDir = path.join(PACKS_SOURCE, dir);
@@ -151,7 +154,7 @@ for (const dir of packDirs) {
       return {
         file: s.file,
         label: s.label || s.line || filename,
-        audioUrl: `/audio/${packName}/${filename}`,
+        audioUrl: `${OG_PACKS_RAW_BASE}/${packName}/sounds/${filename}`,
       };
     });
 
@@ -161,23 +164,6 @@ for (const dir of packDirs) {
     // Pick first sound from this category as a preview
     if (sounds.length > 0 && previewSounds.length < 6) {
       previewSounds.push(sounds[0]);
-    }
-  }
-
-  // Copy audio files
-  const audioOutDir = path.join(OUTPUT_AUDIO, packName);
-  fs.mkdirSync(audioOutDir, { recursive: true });
-
-  const soundsDir = path.join(packDir, "sounds");
-  if (fs.existsSync(soundsDir)) {
-    const audioFiles = fs.readdirSync(soundsDir);
-    for (const f of audioFiles) {
-      const src = path.join(soundsDir, f);
-      const dest = path.join(audioOutDir, f);
-      if (fs.statSync(src).isFile()) {
-        fs.copyFileSync(src, dest);
-        totalAudioFiles++;
-      }
     }
   }
 
@@ -210,5 +196,5 @@ const output = {
 fs.writeFileSync(OUTPUT_JSON, JSON.stringify(output, null, 2));
 
 console.log(
-  `[generate] Done: ${packs.length} packs, ${totalAudioFiles} audio files copied`
+  `[generate] Done: ${packs.length} packs (audio served from ${OG_PACKS_RAW_BASE})`
 );
