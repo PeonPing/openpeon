@@ -82,30 +82,13 @@ interface Manifest {
   categories: Record<string, ManifestCategory>;
 }
 
-// ── Main ────────────────────────────────────────────────────────────────────
-const SITE_DIR = path.resolve(__dirname, "..");
-const PACKS_SOURCE =
-  process.env.PACKS_SOURCE_DIR ||
-  path.resolve(SITE_DIR, "../../og-packs");
-const OUTPUT_JSON = path.join(SITE_DIR, "src/data/packs-data.json");
-
-// Audio served directly from GitHub — no local copy needed
-const OG_PACKS_RAW_BASE =
-  process.env.OG_PACKS_RAW_BASE ||
-  "https://raw.githubusercontent.com/PeonPing/og-packs/v1.0.0";
-
-console.log(`[generate] Reading packs from: ${PACKS_SOURCE}`);
-
-if (!fs.existsSync(PACKS_SOURCE)) {
-  console.error(`[generate] Packs source not found: ${PACKS_SOURCE}`);
-  process.exit(1);
+interface RegistryEntry {
+  name: string;
+  display_name: string;
+  source_repo: string;
+  source_ref: string;
+  source_path: string;
 }
-
-const packDirs = fs
-  .readdirSync(PACKS_SOURCE, { withFileTypes: true })
-  .filter((d) => d.isDirectory())
-  .map((d) => d.name)
-  .sort();
 
 interface PackData {
   name: string;
@@ -124,26 +107,25 @@ interface PackData {
   previewSounds: { file: string; label: string; audioUrl: string }[];
 }
 
-const packs: PackData[] = [];
+// ── Config ──────────────────────────────────────────────────────────────────
+const SITE_DIR = path.resolve(__dirname, "..");
+const PACKS_SOURCE =
+  process.env.PACKS_SOURCE_DIR ||
+  path.resolve(SITE_DIR, "../../og-packs");
+const OUTPUT_JSON = path.join(SITE_DIR, "src/data/packs-data.json");
 
-for (const dir of packDirs) {
-  const packDir = path.join(PACKS_SOURCE, dir);
+const OG_PACKS_RAW_BASE =
+  process.env.OG_PACKS_RAW_BASE ||
+  "https://raw.githubusercontent.com/PeonPing/og-packs/v1.0.0";
 
-  // Find manifest (prefer openpeon.json)
-  let manifestPath: string | null = null;
-  for (const mname of ["openpeon.json", "manifest.json"]) {
-    const p = path.join(packDir, mname);
-    if (fs.existsSync(p)) {
-      manifestPath = p;
-      break;
-    }
-  }
-  if (!manifestPath) continue;
+const REGISTRY_INDEX_URL =
+  process.env.REGISTRY_INDEX_URL ||
+  "https://peonping.github.io/registry/index.json";
 
-  const manifest: Manifest = JSON.parse(fs.readFileSync(manifestPath, "utf-8"));
-  const packName = manifest.name || dir;
-
-  // Process categories
+// ── Helpers ─────────────────────────────────────────────────────────────────
+// audioBase should be the URL of the directory containing sounds/
+// e.g. "https://raw.../og-packs/v1.0.0/peon" or "https://raw.../mypack/v1.0.0"
+function processManifest(manifest: Manifest, packName: string, audioBase: string): PackData {
   const categories: PackData["categories"] = [];
   const previewSounds: PackData["previewSounds"] = [];
   let soundCount = 0;
@@ -154,14 +136,13 @@ for (const dir of packDirs) {
       return {
         file: s.file,
         label: s.label || s.line || filename,
-        audioUrl: `${OG_PACKS_RAW_BASE}/${packName}/sounds/${filename}`,
+        audioUrl: `${audioBase}/sounds/${filename}`,
       };
     });
 
     categories.push({ name: catName, sounds });
     soundCount += sounds.length;
 
-    // Pick first sound from this category as a preview
     if (sounds.length > 0 && previewSounds.length < 6) {
       previewSounds.push(sounds[0]);
     }
@@ -169,7 +150,7 @@ for (const dir of packDirs) {
 
   const lang = manifest.language || "en";
 
-  packs.push({
+  return {
     name: packName,
     displayName: manifest.display_name,
     version: manifest.version || "1.0.0",
@@ -184,17 +165,120 @@ for (const dir of packDirs) {
     categoryNames: categories.map((c) => c.name),
     totalSoundCount: soundCount,
     previewSounds,
-  });
+  };
 }
 
-// Write output
-fs.mkdirSync(path.dirname(OUTPUT_JSON), { recursive: true });
-const output = {
-  generatedAt: new Date().toISOString(),
-  packs,
-};
-fs.writeFileSync(OUTPUT_JSON, JSON.stringify(output, null, 2));
+// ── Local mode: read manifests from filesystem ──────────────────────────────
+function generateFromLocal(): PackData[] {
+  console.log(`[generate] Reading packs from local: ${PACKS_SOURCE}`);
 
-console.log(
-  `[generate] Done: ${packs.length} packs (audio served from ${OG_PACKS_RAW_BASE})`
-);
+  const packDirs = fs
+    .readdirSync(PACKS_SOURCE, { withFileTypes: true })
+    .filter((d) => d.isDirectory())
+    .map((d) => d.name)
+    .sort();
+
+  const packs: PackData[] = [];
+
+  for (const dir of packDirs) {
+    const packDir = path.join(PACKS_SOURCE, dir);
+
+    let manifestPath: string | null = null;
+    for (const mname of ["openpeon.json", "manifest.json"]) {
+      const p = path.join(packDir, mname);
+      if (fs.existsSync(p)) {
+        manifestPath = p;
+        break;
+      }
+    }
+    if (!manifestPath) continue;
+
+    const manifest: Manifest = JSON.parse(fs.readFileSync(manifestPath, "utf-8"));
+    const packName = manifest.name || dir;
+    // audioBase = repo root + pack directory (og-packs monorepo layout)
+    packs.push(processManifest(manifest, packName, `${OG_PACKS_RAW_BASE}/${packName}`));
+  }
+
+  return packs;
+}
+
+// ── Remote mode: fetch manifests from GitHub via registry ───────────────────
+async function generateFromRemote(): Promise<PackData[]> {
+  console.log(`[generate] Fetching pack list from registry: ${REGISTRY_INDEX_URL}`);
+
+  const indexRes = await fetch(REGISTRY_INDEX_URL);
+  if (!indexRes.ok) {
+    throw new Error(`Failed to fetch registry index: ${indexRes.status}`);
+  }
+  const index: { packs: RegistryEntry[] } = await indexRes.json();
+
+  console.log(`[generate] Found ${index.packs.length} packs in registry`);
+
+  const packs: PackData[] = [];
+
+  // Fetch manifests in parallel (batches of 10)
+  const entries = index.packs;
+  const batchSize = 10;
+
+  for (let i = 0; i < entries.length; i += batchSize) {
+    const batch = entries.slice(i, i + batchSize);
+    const results = await Promise.allSettled(
+      batch.map(async (entry) => {
+        const rawBase = `https://raw.githubusercontent.com/${entry.source_repo}/${entry.source_ref}`;
+        const manifestUrl = entry.source_path
+          ? `${rawBase}/${entry.source_path}/openpeon.json`
+          : `${rawBase}/openpeon.json`;
+
+        const res = await fetch(manifestUrl);
+        if (!res.ok) {
+          console.warn(`[generate] Failed to fetch manifest for ${entry.name}: ${res.status}`);
+          return null;
+        }
+
+        const manifest: Manifest = await res.json();
+        const packName = manifest.name || entry.name;
+
+        // audioBase = directory containing sounds/
+        // og-packs monorepo: rawBase/packDir  (e.g. .../og-packs/v1.0.0/peon)
+        // standalone repo:   rawBase           (e.g. .../mypack/v1.0.0)
+        const audioBase = entry.source_path
+          ? `${rawBase}/${entry.source_path}`
+          : rawBase;
+
+        return processManifest(manifest, packName, audioBase);
+      })
+    );
+
+    for (const result of results) {
+      if (result.status === "fulfilled" && result.value) {
+        packs.push(result.value);
+      }
+    }
+  }
+
+  packs.sort((a, b) => a.name.localeCompare(b.name));
+  return packs;
+}
+
+// ── Main ────────────────────────────────────────────────────────────────────
+async function main() {
+  const useLocal = fs.existsSync(PACKS_SOURCE);
+  const packs = useLocal ? generateFromLocal() : await generateFromRemote();
+
+  fs.mkdirSync(path.dirname(OUTPUT_JSON), { recursive: true });
+  const output = {
+    generatedAt: new Date().toISOString(),
+    packs,
+  };
+  fs.writeFileSync(OUTPUT_JSON, JSON.stringify(output, null, 2));
+
+  const mode = useLocal ? "local" : "remote (GitHub)";
+  console.log(
+    `[generate] Done: ${packs.length} packs from ${mode}`
+  );
+}
+
+main().catch((err) => {
+  console.error("[generate] Fatal error:", err);
+  process.exit(1);
+});
