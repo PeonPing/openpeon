@@ -50,6 +50,8 @@ const FRANCHISE_MAP: Record<string, Franchise> = {
   duke_nukem: { name: "Duke Nukem", url: "https://en.wikipedia.org/wiki/Duke_Nukem" },
   aoe2: { name: "Age of Empires II", url: "https://www.ageofempires.com" },
   aom_greek: { name: "Age of Mythology", url: "https://www.ageofempires.com/games/aom/" },
+  wc3_jaina: { name: "Warcraft III", url: "https://liquipedia.net/warcraft/Warcraft_III" },
+  ra2_yuri: { name: "Command & Conquer: Red Alert 2", url: "https://www.ea.com/games/command-and-conquer" },
 };
 
 // ── Language labels ─────────────────────────────────────────────────────────
