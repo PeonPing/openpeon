@@ -1,0 +1,161 @@
+# OpenPeon — llms.txt
+
+> An open standard for coding event sounds. Any IDE, any pack, one format.
+
+OpenPeon is the home of CESP (Coding Event Sound Pack Specification), an open standard that defines how sound packs respond to events in agentic IDEs like Claude Code, Cursor, and OpenAI Codex.
+
+## Links
+
+- Website: https://openpeon.com
+- Spec: https://openpeon.com/spec
+- Packs: https://openpeon.com/packs
+- Create a Pack: https://openpeon.com/create
+- GitHub: https://github.com/PeonPing/openpeon
+- Full Spec (markdown): https://github.com/PeonPing/openpeon/blob/main/spec/cesp-v1.md
+- JSON Schema: https://github.com/PeonPing/openpeon/blob/main/spec/openpeon.schema.json
+- Reference Implementation: https://github.com/PeonPing/peon-ping
+
+## What is CESP?
+
+CESP (Coding Event Sound Pack Specification) v1.0 defines:
+1. A set of event categories that coding tools emit
+2. A manifest format (openpeon.json) mapping categories to sound files
+3. Directory structure and audio file constraints
+4. An IDE mapping contract for how tools map their events to CESP categories
+
+## Event Categories
+
+CESP defines 9 event categories (6 core + 3 extended).
+
+### Core Categories (players MUST support)
+- session.start — Session or workspace opens
+- task.acknowledge — Tool accepted work, is processing
+- task.complete — Work finished successfully
+- task.error — Something failed
+- input.required — Blocked, waiting for user input or approval
+- resource.limit — Rate, token, or quota limit hit
+
+### Extended Categories (optional)
+- user.spam — User sending commands too fast
+- session.end — Session closes gracefully
+- task.progress — Long task still running
+
+## Manifest Format (openpeon.json)
+
+Every pack includes an openpeon.json file at its root.
+
+### Required Fields
+- cesp_version: "1.0"
+- name: Machine-readable ID (a-z0-9, hyphens, underscores, 1-64 chars)
+- display_name: Human-readable name (1-128 chars)
+- version: Semantic version (e.g. "1.0.0")
+- categories: Object mapping category names to { sounds: [{ file, label, sha256 }] }
+
+### Recommended Fields
+- author: { name, github }
+- license: SPDX identifier (e.g. "MIT", "CC-BY-NC-4.0")
+- language: BCP 47 tag (e.g. "en", "es", "ru")
+- description: Short description (max 256 chars)
+
+### Sound Entry Fields
+- file: Relative path to audio file (forward slashes, e.g. "sounds/hello.mp3")
+- label: Human-readable description of the sound
+- sha256: SHA-256 hex digest (required for registry submission)
+
+### Example Manifest
+
+```json
+{
+  "cesp_version": "1.0",
+  "name": "my-pack",
+  "display_name": "My Sound Pack",
+  "version": "1.0.0",
+  "author": { "name": "yourname", "github": "yourname" },
+  "license": "CC-BY-NC-4.0",
+  "language": "en",
+  "categories": {
+    "session.start": {
+      "sounds": [
+        { "file": "sounds/hello.mp3", "label": "Hello!", "sha256": "abc123..." }
+      ]
+    },
+    "task.complete": {
+      "sounds": [
+        { "file": "sounds/done.mp3", "label": "Done!", "sha256": "def456..." }
+      ]
+    }
+  }
+}
+```
+
+## Directory Structure
+
+```
+my-pack/
+  openpeon.json        # Required manifest
+  sounds/              # Audio files
+    hello.mp3
+    done.mp3
+  README.md            # Optional
+  LICENSE              # Optional
+```
+
+## Audio Constraints
+
+Supported formats: WAV (.wav), MP3 (.mp3), OGG Vorbis (.ogg)
+Max per file: 1 MB
+Max per pack: 50 MB
+Filenames: [a-zA-Z0-9._-]+ only (no spaces, no Unicode)
+Paths: Forward slashes, relative to manifest, no ../ traversal
+
+## IDE Mapping Examples
+
+Each IDE maps its own events to CESP categories:
+- Claude Code: SessionStart → session.start, Stop → task.complete, Notification(permission) → input.required
+- Codex: agent-turn-complete → task.complete, start → session.start
+- Cursor: stop → task.complete, beforeShellExecution → task.acknowledge
+
+## Player Behavior Requirements
+
+- Players MUST pick a random sound from the category array
+- Players SHOULD avoid repeating the last played sound
+- Players MUST support a master volume control (0.0–1.0)
+- Players MUST allow individual categories to be disabled
+- Players SHOULD support a global mute/pause toggle
+- If a category has no sounds, silently skip it
+
+## Available Packs (36)
+
+There are 36 CESP-compatible sound packs available at https://openpeon.com/packs covering:
+- Warcraft III (Orc Peon, Human Peasant, Undead Acolyte, Brewmaster — in English, Spanish, French, Czech, Polish, Russian)
+- StarCraft (Kerrigan, Battlecruiser, SCV, Firebat, Medic, Siege Tank, Science Vessel, Terran Mix)
+- Command & Conquer (Red Alert 2 Kirov, Soviet Engineer, Red Alert Soviet)
+- Portal (GLaDOS)
+- Team Fortress 2 (Engineer)
+- Dota 2 (Axe)
+- Helldivers 2 (Helldiver)
+- The Elder Scrolls (Molag Bal, Sheogorath)
+- Duke Nukem
+- Rick and Morty (Rick Sanchez)
+- The Sopranos (Tony Soprano)
+- Age of Empires II (Taunts)
+- Age of Mythology (Greek Villager)
+- Warcraft II (Human Peasant)
+
+## Creating a Pack
+
+1. Gather audio files (WAV/MP3/OGG, short clips 1-5 seconds)
+2. Create directory with openpeon.json + sounds/ folder
+3. Write manifest mapping sounds to CESP categories
+4. Submit PR to https://github.com/PeonPing/peon-ping
+
+Full guide: https://openpeon.com/create
+
+## Implementing CESP in Your IDE
+
+1. Map your IDE events to CESP categories
+2. Load openpeon.json manifest from installed packs
+3. On each event, pick a random sound from the matching category
+4. Play the audio file, respecting volume and mute settings
+
+Full spec: https://openpeon.com/spec

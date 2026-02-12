@@ -1,0 +1,56 @@
+@import "tailwindcss";
+
+@font-face {
+  font-family: "Friz Quadrata";
+  src: url("/fonts/FRIZQT__.TTF") format("truetype");
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+@theme inline {
+  --color-gold: #ffab01;
+  --color-gold-dim: rgba(255, 171, 1, 0.3);
+  --color-gold-glow: rgba(255, 171, 1, 0.15);
+  --color-surface-bg: #000000;
+  --color-surface-card: #111118;
+  --color-surface-border: #222233;
+  --color-surface-terminal: #1a1b26;
+  --color-text-primary: #f4f7ff;
+  --color-text-body: #e0d8c8;
+  --color-text-muted: #9ca8c5;
+  --color-text-dim: #505a79;
+  --color-text-subtle: #7b818d;
+  --color-success: #4ade80;
+
+  --font-display: "Friz Quadrata", "Palatino Linotype", "Book Antiqua",
+    "Palatino", serif;
+  --font-body: "Inter", system-ui, -apple-system, sans-serif;
+  --font-mono: "JetBrains Mono", monospace;
+}
+
+body {
+  background: var(--color-surface-bg);
+  color: var(--color-text-body);
+  font-family: var(--font-body);
+}
+
+::selection {
+  background: var(--color-gold-dim);
+  color: var(--color-text-primary);
+}
+
+/* Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--color-surface-border);
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-text-dim);
+}
