@@ -1,0 +1,135 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://openpeon.github.io/schema/registry-entry-v1.schema.json",
+  "title": "OpenPeon Registry Entry",
+  "description": "Schema for registry.json entries in the OpenPeon pack registry",
+  "type": "object",
+  "required": ["name", "display_name", "version", "author", "source", "manifest_sha256", "trust_tier", "categories", "license", "total_size_bytes", "sound_count", "added"],
+  "properties": {
+    "name": {
+      "type": "string",
+      "pattern": "^[a-z0-9][a-z0-9_-]*$",
+      "minLength": 1,
+      "maxLength": 64,
+      "description": "Pack identifier, must match the pack's openpeon.json name"
+    },
+    "display_name": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128,
+      "description": "Human-readable display name"
+    },
+    "version": {
+      "type": "string",
+      "description": "Pack version (semver)"
+    },
+    "description": {
+      "type": "string",
+      "maxLength": 256,
+      "description": "Short description"
+    },
+    "author": {
+      "type": "object",
+      "required": ["name", "github"],
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "Author's display name"
+        },
+        "github": {
+          "type": "string",
+          "description": "GitHub username (required for registry)"
+        }
+      },
+      "additionalProperties": false
+    },
+    "source": {
+      "type": "object",
+      "required": ["type", "repo", "ref"],
+      "properties": {
+        "type": {
+          "type": "string",
+          "const": "github",
+          "description": "Source type (currently only github)"
+        },
+        "repo": {
+          "type": "string",
+          "pattern": "^[a-zA-Z0-9._-]+/[a-zA-Z0-9._-]+$",
+          "description": "GitHub repo in owner/name format"
+        },
+        "ref": {
+          "type": "string",
+          "description": "Git ref (tag or commit SHA), pinned"
+        }
+      },
+      "additionalProperties": false
+    },
+    "manifest_sha256": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$",
+      "description": "SHA-256 of the openpeon.json manifest file at the pinned ref"
+    },
+    "trust_tier": {
+      "type": "string",
+      "enum": ["official", "verified", "community"],
+      "description": "Trust level based on GitHub reputation signals"
+    },
+    "categories": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "enum": [
+          "session.start",
+          "session.end",
+          "task.acknowledge",
+          "task.complete",
+          "task.error",
+          "task.progress",
+          "input.required",
+          "resource.limit",
+          "user.spam"
+        ]
+      },
+      "uniqueItems": true,
+      "description": "List of CESP categories this pack provides sounds for"
+    },
+    "language": {
+      "type": "string",
+      "description": "BCP 47 language tag"
+    },
+    "license": {
+      "type": "string",
+      "description": "SPDX license identifier (required for registry)"
+    },
+    "total_size_bytes": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 52428800,
+      "description": "Total size of all pack files in bytes (max 50 MB)"
+    },
+    "sound_count": {
+      "type": "integer",
+      "minimum": 1,
+      "description": "Total number of sound files in the pack"
+    },
+    "tags": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "maxItems": 10,
+      "description": "Tags for discoverability"
+    },
+    "added": {
+      "type": "string",
+      "format": "date",
+      "description": "Date the pack was added to the registry (ISO 8601)"
+    },
+    "updated": {
+      "type": "string",
+      "format": "date",
+      "description": "Date the registry entry was last updated"
+    }
+  },
+  "additionalProperties": false
+}

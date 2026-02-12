@@ -1,0 +1,162 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://openpeon.github.io/schema/openpeon-v1.schema.json",
+  "title": "CESP v1.0 Sound Pack Manifest",
+  "description": "Schema for validating openpeon.json sound pack manifests per the Coding Event Sound Pack Specification v1.0",
+  "type": "object",
+  "required": ["cesp_version", "name", "display_name", "version", "categories"],
+  "properties": {
+    "cesp_version": {
+      "type": "string",
+      "const": "1.0",
+      "description": "CESP specification version"
+    },
+    "name": {
+      "type": "string",
+      "pattern": "^[a-z0-9][a-z0-9_-]*$",
+      "minLength": 1,
+      "maxLength": 64,
+      "description": "Machine-readable pack identifier"
+    },
+    "display_name": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128,
+      "description": "Human-readable display name"
+    },
+    "version": {
+      "type": "string",
+      "pattern": "^(0|[1-9]\\d*)\\.(0|[1-9]\\d*)\\.(0|[1-9]\\d*)(?:-((?:0|[1-9]\\d*|\\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\\.(?:0|[1-9]\\d*|\\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\\+([0-9a-zA-Z-]+(?:\\.[0-9a-zA-Z-]+)*))?$",
+      "description": "Pack version (semver)"
+    },
+    "description": {
+      "type": "string",
+      "maxLength": 256,
+      "description": "Short description of the pack"
+    },
+    "author": {
+      "type": "object",
+      "required": ["name"],
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "Author's display name"
+        },
+        "github": {
+          "type": "string",
+          "pattern": "^[a-zA-Z0-9](?:[a-zA-Z0-9]|-(?=[a-zA-Z0-9])){0,38}$",
+          "description": "GitHub username"
+        }
+      },
+      "additionalProperties": false
+    },
+    "license": {
+      "type": "string",
+      "description": "SPDX license identifier"
+    },
+    "language": {
+      "type": "string",
+      "pattern": "^[a-z]{2,3}(-[A-Z][a-z]{3})?(-[A-Z]{2})?$",
+      "description": "BCP 47 language tag"
+    },
+    "homepage": {
+      "type": "string",
+      "format": "uri",
+      "description": "URL to pack homepage or repository"
+    },
+    "tags": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "maxLength": 32
+      },
+      "maxItems": 10,
+      "uniqueItems": true,
+      "description": "Tags for discoverability"
+    },
+    "preview": {
+      "type": "string",
+      "description": "Path to preview audio file, relative to manifest"
+    },
+    "min_player_version": {
+      "type": "string",
+      "description": "Minimum CESP player version required (semver)"
+    },
+    "categories": {
+      "type": "object",
+      "propertyNames": {
+        "enum": [
+          "session.start",
+          "session.end",
+          "task.acknowledge",
+          "task.complete",
+          "task.error",
+          "task.progress",
+          "input.required",
+          "resource.limit",
+          "user.spam"
+        ]
+      },
+      "additionalProperties": {
+        "$ref": "#/definitions/category"
+      },
+      "description": "Map of CESP category names to sound lists"
+    },
+    "category_aliases": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "string",
+        "enum": [
+          "session.start",
+          "session.end",
+          "task.acknowledge",
+          "task.complete",
+          "task.error",
+          "task.progress",
+          "input.required",
+          "resource.limit",
+          "user.spam"
+        ]
+      },
+      "description": "Maps legacy category names to CESP category names"
+    }
+  },
+  "additionalProperties": false,
+  "definitions": {
+    "category": {
+      "type": "object",
+      "required": ["sounds"],
+      "properties": {
+        "sounds": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/sound"
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "sound": {
+      "type": "object",
+      "required": ["file", "label"],
+      "properties": {
+        "file": {
+          "type": "string",
+          "pattern": "^[a-zA-Z0-9._/-]+$",
+          "description": "Path to audio file, relative to manifest. Must use forward slashes."
+        },
+        "label": {
+          "type": "string",
+          "maxLength": 256,
+          "description": "Human-readable description of the sound"
+        },
+        "sha256": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$",
+          "description": "SHA-256 hex digest of the audio file"
+        }
+      },
+      "additionalProperties": false
+    }
+  }
+}
