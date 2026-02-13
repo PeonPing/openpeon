@@ -31,6 +31,14 @@ export const metadata: Metadata = {
     title: "OpenPeon — An Open Standard for Coding Event Sounds",
     description:
       "Browse sound packs for agentic IDEs. CESP is an open standard any coding tool can adopt.",
+    images: ["/og-image.png"],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "OpenPeon — An Open Standard for Coding Event Sounds",
+    description:
+      "Browse sound packs for agentic IDEs. CESP is an open standard any coding tool can adopt.",
+    images: ["/og-image.png"],
   },
   other: {
     "llms.txt": "/llms.txt",

@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://openpeon.com/sitemap.xml

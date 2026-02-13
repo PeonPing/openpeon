@@ -1,0 +1,19 @@
+import type { MetadataRoute } from "next";
+import { getAllPacks } from "@/lib/packs";
+
+export default function sitemap(): MetadataRoute.Sitemap {
+  const packs = getAllPacks();
+
+  const packPages = packs.map((pack) => ({
+    url: `https://openpeon.com/packs/${pack.name}`,
+    lastModified: new Date(),
+  }));
+
+  return [
+    { url: "https://openpeon.com", lastModified: new Date() },
+    { url: "https://openpeon.com/packs", lastModified: new Date() },
+    { url: "https://openpeon.com/spec", lastModified: new Date() },
+    { url: "https://openpeon.com/create", lastModified: new Date() },
+    ...packPages,
+  ];
+}

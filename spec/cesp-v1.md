@@ -1,6 +1,6 @@
 # Coding Event Sound Pack Specification (CESP) v1.0
 
-**Status:** Draft
+**Status:** Released
 **Version:** 1.0
 **Date:** 2026-02-12
 **Authors:** Gary Sheng ([@garysheng](https://github.com/garysheng))
