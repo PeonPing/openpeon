@@ -1,6 +1,8 @@
 import type { MetadataRoute } from "next";
 import { getAllPacks } from "@/lib/packs";
 
+export const dynamic = "force-static";
+
 export default function sitemap(): MetadataRoute.Sitemap {
   const packs = getAllPacks();
 
