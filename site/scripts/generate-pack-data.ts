@@ -47,6 +47,7 @@ const FRANCHISE_MAP: Record<string, Franchise> = {
   hd2_helldiver: { name: "Helldivers 2", url: "https://store.steampowered.com/app/553850/HELLDIVERS_2/" },
   molag_bal: { name: "The Elder Scrolls", url: "https://elderscrolls.bethesda.net" },
   sheogorath: { name: "The Elder Scrolls", url: "https://elderscrolls.bethesda.net" },
+  counterstrike: { name: "Counter-Strike", url: "https://www.counter-strike.net" },
   duke_nukem: { name: "Duke Nukem", url: "https://en.wikipedia.org/wiki/Duke_Nukem" },
   aoe2: { name: "Age of Empires II", url: "https://www.ageofempires.com" },
   aom_greek: { name: "Age of Mythology", url: "https://www.ageofempires.com/games/aom/" },
