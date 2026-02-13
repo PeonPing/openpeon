@@ -1,0 +1,6 @@
+{
+  "buildCommand": "cd site && npm install && npm run build",
+  "outputDirectory": "site/.next",
+  "installCommand": "echo 'install handled in buildCommand'",
+  "framework": "nextjs"
+}
