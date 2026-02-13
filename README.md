@@ -120,19 +120,19 @@ See the [full spec](spec/cesp-v1.md) for details on sound selection, volume cont
 - [Orc Peon (Warcraft III)](https://github.com/PeonPing/og-packs/tree/main/peon) — the original peon-ping pack
 - [GLaDOS (Portal)](https://github.com/PeonPing/og-packs/tree/main/glados) — passive-aggressive AI companion
 
-All 36 original packs live in [PeonPing/og-packs](https://github.com/PeonPing/og-packs).
+All 40 official packs live in [PeonPing/og-packs](https://github.com/PeonPing/og-packs).
 
 ## Registry
 
-The OpenPeon registry is **live** at [PeonPing/registry](https://github.com/PeonPing/registry). The registry index is published to [peonping.github.io/registry/index.json](https://peonping.github.io/registry/index.json) and currently lists 36 packs.
+The OpenPeon registry is **live** at [PeonPing/registry](https://github.com/PeonPing/registry). The registry index is published to [peonping.github.io/registry/index.json](https://peonping.github.io/registry/index.json) and currently lists 43 packs (40 official + 3 community).
 
-Packs are hosted in their own repos. The original 36 are in [PeonPing/og-packs](https://github.com/PeonPing/og-packs). See [Registry Design](registry-design.md) for the architecture details.
+Packs are hosted in their own repos. The 40 official packs are in [PeonPing/og-packs](https://github.com/PeonPing/og-packs). Community packs live in contributor repos. See [Registry Design](registry-design.md) for the architecture details.
 
 ## Implementations
 
 | Tool | Status | Link |
 |---|---|---|
-| [peon-ping](https://github.com/PeonPing/peon-ping) (Claude Code) | Reference implementation | 36+ packs |
+| [peon-ping](https://github.com/PeonPing/peon-ping) (Claude Code, Codex, Cursor, OpenCode) | Reference implementation | 43+ packs |
 | *Your IDE here* | — | [Open a PR](https://github.com/PeonPing/openpeon/issues) |
 
 ## Files

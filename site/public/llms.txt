@@ -126,9 +126,9 @@ Each IDE maps its own events to CESP categories:
 - Players SHOULD support a global mute/pause toggle
 - If a category has no sounds, silently skip it
 
-## Available Packs (36)
+## Available Packs
 
-There are 36 CESP-compatible sound packs available at https://openpeon.com/packs covering:
+There are dozens of CESP-compatible sound packs available at https://openpeon.com/packs covering:
 - Warcraft III (Orc Peon, Human Peasant, Undead Acolyte, Brewmaster — in English, Spanish, French, Czech, Polish, Russian)
 - StarCraft (Kerrigan, Battlecruiser, SCV, Firebat, Medic, Siege Tank, Science Vessel, Terran Mix)
 - Command & Conquer (Red Alert 2 Kirov, Soviet Engineer, Red Alert Soviet)

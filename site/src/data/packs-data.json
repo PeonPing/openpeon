@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-02-12T22:15:28.247Z",
+  "generatedAt": "2026-02-13T03:14:47.474Z",
   "packs": [
     {
       "name": "acolyte_de",
@@ -5861,6 +5861,370 @@
       ]
     },
     {
+      "name": "ra2_yuri",
+      "displayName": "RA2 Yuri (Yuri's Revenge)",
+      "version": "1.0.0",
+      "author": {
+        "name": "PeonPing",
+        "github": "PeonPing"
+      },
+      "license": "CC-BY-NC-4.0",
+      "language": "en",
+      "languageLabel": "English",
+      "franchise": {
+        "name": "Command & Conquer: Red Alert 2",
+        "url": "https://www.ea.com/games/command-and-conquer"
+      },
+      "categories": [
+        {
+          "name": "session.start",
+          "sounds": [
+            {
+              "file": "iyupsea.wav",
+              "label": "I'm here",
+              "audioUrl": "https://raw.githubusercontent.com/testy-cool/openpeon-ra2-yuri/v1.0.0/./sounds/iyupsea.wav"
+            },
+            {
+              "file": "iyupseb.wav",
+              "label": "You disturb me?",
+              "audioUrl": "https://raw.githubusercontent.com/testy-cool/openpeon-ra2-yuri/v1.0.0/./sounds/iyupseb.wav"
+            },
+            {
+              "file": "iyupsec.wav",
+              "label": "You will learn from me",
+              "audioUrl": "https://raw.githubusercontent.com/testy-cool/openpeon-ra2-yuri/v1.0.0/./sounds/iyupsec.wav"
+            },
+            {
+              "file": "iyupsed.wav",
+              "label": "Be of one mind",
+              "audioUrl": "https://raw.githubusercontent.com/testy-cool/openpeon-ra2-yuri/v1.0.0/./sounds/iyupsed.wav"
+            },
+            {
+              "file": "iyursea.wav",
+              "label": "Perhaps I can be of assistance",
+              "audioUrl": "https://raw.githubusercontent.com/testy-cool/openpeon-ra2-yuri/v1.0.0/./sounds/iyursea.wav"
+            },
+            {
+              "file": "iyurseb.wav",
+              "label": "Share your thoughts with me",
+              "audioUrl": "https://raw.githubusercontent.com/testy-cool/openpeon-ra2-yuri/v1.0.0/./sounds/iyurseb.wav"
+            },
+            {
+              "file": "iyupcrd.wav",
+              "label": "There's only one true Yuri",
+              "audioUrl": "https://raw.githubusercontent.com/testy-cool/openpeon-ra2-yuri/v1.0.0/./sounds/iyupcrd.wav"
+            }
+          ]
+        },
+        {
+          "name": "task.acknowledge",
+          "sounds": [
+            {
+              "file": "iyupmoa.wav",
+              "label": "Your thoughts are mine",
+              "audioUrl": "https://raw.githubusercontent.com/testy-cool/openpeon-ra2-yuri/v1.0.0/./sounds/iyupmoa.wav"
+            },
+            {
+              "file": "iyupmob.wav",
+              "label": "Most unimaginative",
+              "audioUrl": "https://raw.githubusercontent.com/testy-cool/openpeon-ra2-yuri/v1.0.0/./sounds/iyupmob.wav"
+            },
+            {
+              "file": "iyupmoc.wav",
+              "label": "You will move me there",
+              "audioUrl": "https://raw.githubusercontent.com/testy-cool/openpeon-ra2-yuri/v1.0.0/./sounds/iyupmoc.wav"
+            },
+            {
+              "file": "iyupmod.wav",
+              "label": "Yes, I know",
+              "audioUrl": "https://raw.githubusercontent.com/testy-cool/openpeon-ra2-yuri/v1.0.0/./sounds/iyupmod.wav"
+            },
+            {
+              "file": "iyupmoe.wav",
+              "label": "I have taught you well!",
+              "audioUrl": "https://raw.githubusercontent.com/testy-cool/openpeon-ra2-yuri/v1.0.0/./sounds/iyupmoe.wav"
+            },
+            {
+              "file": "iyupmof.wav",
+              "label": "A trivial matter",
+              "audioUrl": "https://raw.githubusercontent.com/testy-cool/openpeon-ra2-yuri/v1.0.0/./sounds/iyupmof.wav"
+            },
+            {
+              "file": "iyupmog.wav",
+              "label": "I've seen this already",
+              "audioUrl": "https://raw.githubusercontent.com/testy-cool/openpeon-ra2-yuri/v1.0.0/./sounds/iyupmog.wav"
+            },
+            {
+              "file": "iyurmoa.wav",
+              "label": "Yes, good thought",
+              "audioUrl": "https://raw.githubusercontent.com/testy-cool/openpeon-ra2-yuri/v1.0.0/./sounds/iyurmoa.wav"
+            },
+            {
+              "file": "iyurmob.wav",
+              "label": "Understandable",
+              "audioUrl": "https://raw.githubusercontent.com/testy-cool/openpeon-ra2-yuri/v1.0.0/./sounds/iyurmob.wav"
+            },
+            {
+              "file": "iyurmoc.wav",
+              "label": "Makes sense",
+              "audioUrl": "https://raw.githubusercontent.com/testy-cool/openpeon-ra2-yuri/v1.0.0/./sounds/iyurmoc.wav"
+            },
+            {
+              "file": "iyurmod.wav",
+              "label": "Goes without saying",
+              "audioUrl": "https://raw.githubusercontent.com/testy-cool/openpeon-ra2-yuri/v1.0.0/./sounds/iyurmod.wav"
+            }
+          ]
+        },
+        {
+          "name": "task.complete",
+          "sounds": [
+            {
+              "file": "iyupsee.wav",
+              "label": "Your orders, my ideas",
+              "audioUrl": "https://raw.githubusercontent.com/testy-cool/openpeon-ra2-yuri/v1.0.0/./sounds/iyupsee.wav"
+            },
+            {
+              "file": "iyupsef.wav",
+              "label": "Yes, my exquisite mind",
+              "audioUrl": "https://raw.githubusercontent.com/testy-cool/openpeon-ra2-yuri/v1.0.0/./sounds/iyupsef.wav"
+            },
+            {
+              "file": "iyursec.wav",
+              "label": "They will obey!",
+              "audioUrl": "https://raw.githubusercontent.com/testy-cool/openpeon-ra2-yuri/v1.0.0/./sounds/iyursec.wav"
+            },
+            {
+              "file": "iyursed.wav",
+              "label": "Your mind is quicker",
+              "audioUrl": "https://raw.githubusercontent.com/testy-cool/openpeon-ra2-yuri/v1.0.0/./sounds/iyursed.wav"
+            },
+            {
+              "file": "iyursee.wav",
+              "label": "The mind is quicker",
+              "audioUrl": "https://raw.githubusercontent.com/testy-cool/openpeon-ra2-yuri/v1.0.0/./sounds/iyursee.wav"
+            }
+          ]
+        },
+        {
+          "name": "task.error",
+          "sounds": [
+            {
+              "file": "iyupfea.wav",
+              "label": "I sense trouble",
+              "audioUrl": "https://raw.githubusercontent.com/testy-cool/openpeon-ra2-yuri/v1.0.0/./sounds/iyupfea.wav"
+            },
+            {
+              "file": "iyupfeb.wav",
+              "label": "This could be a problem!",
+              "audioUrl": "https://raw.githubusercontent.com/testy-cool/openpeon-ra2-yuri/v1.0.0/./sounds/iyupfeb.wav"
+            },
+            {
+              "file": "iyupfec.wav",
+              "label": "I did not foresee this",
+              "audioUrl": "https://raw.githubusercontent.com/testy-cool/openpeon-ra2-yuri/v1.0.0/./sounds/iyupfec.wav"
+            },
+            {
+              "file": "iyuplo1a.wav",
+              "label": "Pain groan",
+              "audioUrl": "https://raw.githubusercontent.com/testy-cool/openpeon-ra2-yuri/v1.0.0/./sounds/iyuplo1a.wav"
+            },
+            {
+              "file": "iyuplo2a.wav",
+              "label": "Pain groan",
+              "audioUrl": "https://raw.githubusercontent.com/testy-cool/openpeon-ra2-yuri/v1.0.0/./sounds/iyuplo2a.wav"
+            },
+            {
+              "file": "iyuplo2b.wav",
+              "label": "Pain groan",
+              "audioUrl": "https://raw.githubusercontent.com/testy-cool/openpeon-ra2-yuri/v1.0.0/./sounds/iyuplo2b.wav"
+            },
+            {
+              "file": "iyuplo3a.wav",
+              "label": "Pain groan",
+              "audioUrl": "https://raw.githubusercontent.com/testy-cool/openpeon-ra2-yuri/v1.0.0/./sounds/iyuplo3a.wav"
+            }
+          ]
+        },
+        {
+          "name": "input.required",
+          "sounds": [
+            {
+              "file": "iyupata.wav",
+              "label": "He will be ours!",
+              "audioUrl": "https://raw.githubusercontent.com/testy-cool/openpeon-ra2-yuri/v1.0.0/./sounds/iyupata.wav"
+            },
+            {
+              "file": "iyupatb.wav",
+              "label": "I bring you peace",
+              "audioUrl": "https://raw.githubusercontent.com/testy-cool/openpeon-ra2-yuri/v1.0.0/./sounds/iyupatb.wav"
+            },
+            {
+              "file": "iyupatc.wav",
+              "label": "I foresaw this need",
+              "audioUrl": "https://raw.githubusercontent.com/testy-cool/openpeon-ra2-yuri/v1.0.0/./sounds/iyupatc.wav"
+            },
+            {
+              "file": "iyupatd.wav",
+              "label": "He will listen",
+              "audioUrl": "https://raw.githubusercontent.com/testy-cool/openpeon-ra2-yuri/v1.0.0/./sounds/iyupatd.wav"
+            },
+            {
+              "file": "iyupate.wav",
+              "label": "He shall serve me well",
+              "audioUrl": "https://raw.githubusercontent.com/testy-cool/openpeon-ra2-yuri/v1.0.0/./sounds/iyupate.wav"
+            },
+            {
+              "file": "iyupatf.wav",
+              "label": "Another pawn joins us",
+              "audioUrl": "https://raw.githubusercontent.com/testy-cool/openpeon-ra2-yuri/v1.0.0/./sounds/iyupatf.wav"
+            },
+            {
+              "file": "iyupatg.wav",
+              "label": "Come to Yuri",
+              "audioUrl": "https://raw.githubusercontent.com/testy-cool/openpeon-ra2-yuri/v1.0.0/./sounds/iyupatg.wav"
+            },
+            {
+              "file": "iyurata.wav",
+              "label": "Something to think about?",
+              "audioUrl": "https://raw.githubusercontent.com/testy-cool/openpeon-ra2-yuri/v1.0.0/./sounds/iyurata.wav"
+            },
+            {
+              "file": "iyuratb.wav",
+              "label": "Their will is my will!",
+              "audioUrl": "https://raw.githubusercontent.com/testy-cool/openpeon-ra2-yuri/v1.0.0/./sounds/iyuratb.wav"
+            },
+            {
+              "file": "iyuratc.wav",
+              "label": "We could use one of those",
+              "audioUrl": "https://raw.githubusercontent.com/testy-cool/openpeon-ra2-yuri/v1.0.0/./sounds/iyuratc.wav"
+            },
+            {
+              "file": "iyuratd.wav",
+              "label": "He will do as I say!",
+              "audioUrl": "https://raw.githubusercontent.com/testy-cool/openpeon-ra2-yuri/v1.0.0/./sounds/iyuratd.wav"
+            },
+            {
+              "file": "iyurate.wav",
+              "label": "Yield to me!",
+              "audioUrl": "https://raw.githubusercontent.com/testy-cool/openpeon-ra2-yuri/v1.0.0/./sounds/iyurate.wav"
+            }
+          ]
+        },
+        {
+          "name": "user.spam",
+          "sounds": [
+            {
+              "file": "iyuprea.wav",
+              "label": "I cannot be overcome!",
+              "audioUrl": "https://raw.githubusercontent.com/testy-cool/openpeon-ra2-yuri/v1.0.0/./sounds/iyuprea.wav"
+            },
+            {
+              "file": "iyupreb.wav",
+              "label": "I am my own master",
+              "audioUrl": "https://raw.githubusercontent.com/testy-cool/openpeon-ra2-yuri/v1.0.0/./sounds/iyupreb.wav"
+            },
+            {
+              "file": "iyuprec.wav",
+              "label": "A pathetic attempt",
+              "audioUrl": "https://raw.githubusercontent.com/testy-cool/openpeon-ra2-yuri/v1.0.0/./sounds/iyuprec.wav"
+            },
+            {
+              "file": "iyupred.wav",
+              "label": "You can't control me!",
+              "audioUrl": "https://raw.githubusercontent.com/testy-cool/openpeon-ra2-yuri/v1.0.0/./sounds/iyupred.wav"
+            },
+            {
+              "file": "iyupdia.wav",
+              "label": "Death scream",
+              "audioUrl": "https://raw.githubusercontent.com/testy-cool/openpeon-ra2-yuri/v1.0.0/./sounds/iyupdia.wav"
+            },
+            {
+              "file": "iyupdib.wav",
+              "label": "Death scream",
+              "audioUrl": "https://raw.githubusercontent.com/testy-cool/openpeon-ra2-yuri/v1.0.0/./sounds/iyupdib.wav"
+            },
+            {
+              "file": "iyupdic.wav",
+              "label": "Death scream",
+              "audioUrl": "https://raw.githubusercontent.com/testy-cool/openpeon-ra2-yuri/v1.0.0/./sounds/iyupdic.wav"
+            },
+            {
+              "file": "iyupdid.wav",
+              "label": "Death scream",
+              "audioUrl": "https://raw.githubusercontent.com/testy-cool/openpeon-ra2-yuri/v1.0.0/./sounds/iyupdid.wav"
+            },
+            {
+              "file": "iyurdia.wav",
+              "label": "Groan of pain",
+              "audioUrl": "https://raw.githubusercontent.com/testy-cool/openpeon-ra2-yuri/v1.0.0/./sounds/iyurdia.wav"
+            },
+            {
+              "file": "iyurdib.wav",
+              "label": "Gasp and choke",
+              "audioUrl": "https://raw.githubusercontent.com/testy-cool/openpeon-ra2-yuri/v1.0.0/./sounds/iyurdib.wav"
+            },
+            {
+              "file": "iyurdic.wav",
+              "label": "Scream of pain",
+              "audioUrl": "https://raw.githubusercontent.com/testy-cool/openpeon-ra2-yuri/v1.0.0/./sounds/iyurdic.wav"
+            },
+            {
+              "file": "iyurat1a.wav",
+              "label": "Psychic ready",
+              "audioUrl": "https://raw.githubusercontent.com/testy-cool/openpeon-ra2-yuri/v1.0.0/./sounds/iyurat1a.wav"
+            },
+            {
+              "file": "iyurat2a.wav",
+              "label": "All in the mind",
+              "audioUrl": "https://raw.githubusercontent.com/testy-cool/openpeon-ra2-yuri/v1.0.0/./sounds/iyurat2a.wav"
+            }
+          ]
+        }
+      ],
+      "categoryNames": [
+        "session.start",
+        "task.acknowledge",
+        "task.complete",
+        "task.error",
+        "input.required",
+        "user.spam"
+      ],
+      "totalSoundCount": 55,
+      "previewSounds": [
+        {
+          "file": "iyupsea.wav",
+          "label": "I'm here",
+          "audioUrl": "https://raw.githubusercontent.com/testy-cool/openpeon-ra2-yuri/v1.0.0/./sounds/iyupsea.wav"
+        },
+        {
+          "file": "iyupmoa.wav",
+          "label": "Your thoughts are mine",
+          "audioUrl": "https://raw.githubusercontent.com/testy-cool/openpeon-ra2-yuri/v1.0.0/./sounds/iyupmoa.wav"
+        },
+        {
+          "file": "iyupsee.wav",
+          "label": "Your orders, my ideas",
+          "audioUrl": "https://raw.githubusercontent.com/testy-cool/openpeon-ra2-yuri/v1.0.0/./sounds/iyupsee.wav"
+        },
+        {
+          "file": "iyupfea.wav",
+          "label": "I sense trouble",
+          "audioUrl": "https://raw.githubusercontent.com/testy-cool/openpeon-ra2-yuri/v1.0.0/./sounds/iyupfea.wav"
+        },
+        {
+          "file": "iyupata.wav",
+          "label": "He will be ours!",
+          "audioUrl": "https://raw.githubusercontent.com/testy-cool/openpeon-ra2-yuri/v1.0.0/./sounds/iyupata.wav"
+        },
+        {
+          "file": "iyuprea.wav",
+          "label": "I cannot be overcome!",
+          "audioUrl": "https://raw.githubusercontent.com/testy-cool/openpeon-ra2-yuri/v1.0.0/./sounds/iyuprea.wav"
+        }
+      ]
+    },
+    {
       "name": "rick",
       "displayName": "Rick Sanchez",
       "version": "1.0.0",
@@ -8124,7 +8488,7 @@
         "name": "anwilk",
         "github": "anwilk"
       },
-      "license": "CC-BY-NC-4.0",
+      "license": "CC-0",
       "language": "en",
       "languageLabel": "English",
       "franchise": {
@@ -8171,9 +8535,9 @@
           "name": "task.complete",
           "sounds": [
             {
-              "file": "beautiful.wav",
+              "file": "its_beautiful.wav",
               "label": "Oooh it's beautiful!",
-              "audioUrl": "https://raw.githubusercontent.com/anwilk/openpeon-wc2_sapper/v1.0.0/./sounds/beautiful.wav"
+              "audioUrl": "https://raw.githubusercontent.com/anwilk/openpeon-wc2_sapper/v1.0.0/./sounds/its_beautiful.wav"
             }
           ]
         },
@@ -8181,9 +8545,9 @@
           "name": "task.error",
           "sounds": [
             {
-              "file": "Kaboom.wav",
+              "file": "kaboom.wav",
               "label": "KABOOOOM!",
-              "audioUrl": "https://raw.githubusercontent.com/anwilk/openpeon-wc2_sapper/v1.0.0/./sounds/Kaboom.wav"
+              "audioUrl": "https://raw.githubusercontent.com/anwilk/openpeon-wc2_sapper/v1.0.0/./sounds/kaboom.wav"
             }
           ]
         },
@@ -8191,9 +8555,9 @@
           "name": "input.required",
           "sounds": [
             {
-              "file": "hello.wav",
+              "file": "hello_question.wav",
               "label": "Hello?",
-              "audioUrl": "https://raw.githubusercontent.com/anwilk/openpeon-wc2_sapper/v1.0.0/./sounds/hello.wav"
+              "audioUrl": "https://raw.githubusercontent.com/anwilk/openpeon-wc2_sapper/v1.0.0/./sounds/hello_question.wav"
             }
           ]
         },
@@ -8201,9 +8565,9 @@
           "name": "resource.limit",
           "sounds": [
             {
-              "file": "weve_got_explosives.mp3",
+              "file": "weve_got_explosives.wav",
               "label": "We've got explosives!",
-              "audioUrl": "https://raw.githubusercontent.com/anwilk/openpeon-wc2_sapper/v1.0.0/./sounds/weve_got_explosives.mp3"
+              "audioUrl": "https://raw.githubusercontent.com/anwilk/openpeon-wc2_sapper/v1.0.0/./sounds/weve_got_explosives.wav"
             }
           ]
         },
@@ -8250,24 +8614,184 @@
           "audioUrl": "https://raw.githubusercontent.com/anwilk/openpeon-wc2_sapper/v1.0.0/./sounds/okay.wav"
         },
         {
-          "file": "beautiful.wav",
+          "file": "its_beautiful.wav",
           "label": "Oooh it's beautiful!",
-          "audioUrl": "https://raw.githubusercontent.com/anwilk/openpeon-wc2_sapper/v1.0.0/./sounds/beautiful.wav"
+          "audioUrl": "https://raw.githubusercontent.com/anwilk/openpeon-wc2_sapper/v1.0.0/./sounds/its_beautiful.wav"
         },
         {
-          "file": "Kaboom.wav",
+          "file": "kaboom.wav",
           "label": "KABOOOOM!",
-          "audioUrl": "https://raw.githubusercontent.com/anwilk/openpeon-wc2_sapper/v1.0.0/./sounds/Kaboom.wav"
+          "audioUrl": "https://raw.githubusercontent.com/anwilk/openpeon-wc2_sapper/v1.0.0/./sounds/kaboom.wav"
         },
         {
-          "file": "hello.wav",
+          "file": "hello_question.wav",
           "label": "Hello?",
-          "audioUrl": "https://raw.githubusercontent.com/anwilk/openpeon-wc2_sapper/v1.0.0/./sounds/hello.wav"
+          "audioUrl": "https://raw.githubusercontent.com/anwilk/openpeon-wc2_sapper/v1.0.0/./sounds/hello_question.wav"
         },
         {
-          "file": "weve_got_explosives.mp3",
+          "file": "weve_got_explosives.wav",
           "label": "We've got explosives!",
-          "audioUrl": "https://raw.githubusercontent.com/anwilk/openpeon-wc2_sapper/v1.0.0/./sounds/weve_got_explosives.mp3"
+          "audioUrl": "https://raw.githubusercontent.com/anwilk/openpeon-wc2_sapper/v1.0.0/./sounds/weve_got_explosives.wav"
+        }
+      ]
+    },
+    {
+      "name": "wc3_jaina",
+      "displayName": "Jaina Proudmore (WarCraft 3)",
+      "version": "1.0.1",
+      "author": {
+        "name": "OmegaZero",
+        "github": "OmegaZero"
+      },
+      "license": "MIT",
+      "language": "en",
+      "languageLabel": "English",
+      "franchise": {
+        "name": "Warcraft III",
+        "url": "https://liquipedia.net/warcraft/Warcraft_III"
+      },
+      "categories": [
+        {
+          "name": "session.start",
+          "sounds": [
+            {
+              "file": "sounds/JainaCanHelp.wav",
+              "label": "I can help",
+              "audioUrl": "https://raw.githubusercontent.com/OmegaZero/openpeon-jaina/v1.0.0/./sounds/JainaCanHelp.wav"
+            },
+            {
+              "file": "sounds/JainaWhatsThePlan.wav",
+              "label": "What's the plan?",
+              "audioUrl": "https://raw.githubusercontent.com/OmegaZero/openpeon-jaina/v1.0.0/./sounds/JainaWhatsThePlan.wav"
+            }
+          ]
+        },
+        {
+          "name": "task.acknowledge",
+          "sounds": [
+            {
+              "file": "sounds/JainaCheckItOut.wav",
+              "label": "I'll check it out",
+              "audioUrl": "https://raw.githubusercontent.com/OmegaZero/openpeon-jaina/v1.0.0/./sounds/JainaCheckItOut.wav"
+            },
+            {
+              "file": "sounds/JainasInterested.wav",
+              "label": "Sounds Interesting",
+              "audioUrl": "https://raw.githubusercontent.com/OmegaZero/openpeon-jaina/v1.0.0/./sounds/JainasInterested.wav"
+            },
+            {
+              "file": "sounds/JainaSoundsGood.wav",
+              "label": "Sounds Good",
+              "audioUrl": "https://raw.githubusercontent.com/OmegaZero/openpeon-jaina/v1.0.0/./sounds/JainaSoundsGood.wav"
+            },
+            {
+              "file": "sounds/JainaTakesCareOfIt.wav",
+              "label": "I'll take care of it",
+              "audioUrl": "https://raw.githubusercontent.com/OmegaZero/openpeon-jaina/v1.0.0/./sounds/JainaTakesCareOfIt.wav"
+            }
+          ]
+        },
+        {
+          "name": "task.complete",
+          "sounds": [
+            {
+              "file": "sounds/JainaYouAskedForIt.wav",
+              "label": "You Asked For It",
+              "audioUrl": "https://raw.githubusercontent.com/OmegaZero/openpeon-jaina/v1.0.0/./sounds/JainaYouAskedForIt.wav"
+            }
+          ]
+        },
+        {
+          "name": "task.error",
+          "sounds": [
+            {
+              "file": "sounds/JainaGettingWeird.wav",
+              "label": "Things are starting to get a little weird...",
+              "audioUrl": "https://raw.githubusercontent.com/OmegaZero/openpeon-jaina/v1.0.0/./sounds/JainaGettingWeird.wav"
+            }
+          ]
+        },
+        {
+          "name": "input.required",
+          "sounds": [
+            {
+              "file": "sounds/JainaThatsCurious.wav",
+              "label": "That's Curious...",
+              "audioUrl": "https://raw.githubusercontent.com/OmegaZero/openpeon-jaina/v1.0.0/./sounds/JainaThatsCurious.wav"
+            },
+            {
+              "file": "sounds/JainaWantedToStudy.wav",
+              "label": "I'll I ever wanted was to study...",
+              "audioUrl": "https://raw.githubusercontent.com/OmegaZero/openpeon-jaina/v1.0.0/./sounds/JainaWantedToStudy.wav"
+            }
+          ]
+        },
+        {
+          "name": "resource.limit",
+          "sounds": [
+            {
+              "file": "sounds/JainaHateViolence.wav",
+              "label": "Blocked",
+              "audioUrl": "https://raw.githubusercontent.com/OmegaZero/openpeon-jaina/v1.0.0/./sounds/JainaHateViolence.wav"
+            },
+            {
+              "file": "sounds/JainaMagicUpheavel.wav",
+              "label": "Blocked",
+              "audioUrl": "https://raw.githubusercontent.com/OmegaZero/openpeon-jaina/v1.0.0/./sounds/JainaMagicUpheavel.wav"
+            }
+          ]
+        },
+        {
+          "name": "user.spam",
+          "sounds": [
+            {
+              "file": "sounds/JainaThinking.wav",
+              "label": "Shh, I'm trying to think here",
+              "audioUrl": "https://raw.githubusercontent.com/OmegaZero/openpeon-jaina/v1.0.0/./sounds/JainaThinking.wav"
+            }
+          ]
+        }
+      ],
+      "categoryNames": [
+        "session.start",
+        "task.acknowledge",
+        "task.complete",
+        "task.error",
+        "input.required",
+        "resource.limit",
+        "user.spam"
+      ],
+      "totalSoundCount": 13,
+      "previewSounds": [
+        {
+          "file": "sounds/JainaCanHelp.wav",
+          "label": "I can help",
+          "audioUrl": "https://raw.githubusercontent.com/OmegaZero/openpeon-jaina/v1.0.0/./sounds/JainaCanHelp.wav"
+        },
+        {
+          "file": "sounds/JainaCheckItOut.wav",
+          "label": "I'll check it out",
+          "audioUrl": "https://raw.githubusercontent.com/OmegaZero/openpeon-jaina/v1.0.0/./sounds/JainaCheckItOut.wav"
+        },
+        {
+          "file": "sounds/JainaYouAskedForIt.wav",
+          "label": "You Asked For It",
+          "audioUrl": "https://raw.githubusercontent.com/OmegaZero/openpeon-jaina/v1.0.0/./sounds/JainaYouAskedForIt.wav"
+        },
+        {
+          "file": "sounds/JainaGettingWeird.wav",
+          "label": "Things are starting to get a little weird...",
+          "audioUrl": "https://raw.githubusercontent.com/OmegaZero/openpeon-jaina/v1.0.0/./sounds/JainaGettingWeird.wav"
+        },
+        {
+          "file": "sounds/JainaThatsCurious.wav",
+          "label": "That's Curious...",
+          "audioUrl": "https://raw.githubusercontent.com/OmegaZero/openpeon-jaina/v1.0.0/./sounds/JainaThatsCurious.wav"
+        },
+        {
+          "file": "sounds/JainaHateViolence.wav",
+          "label": "Blocked",
+          "audioUrl": "https://raw.githubusercontent.com/OmegaZero/openpeon-jaina/v1.0.0/./sounds/JainaHateViolence.wav"
         }
       ]
     }

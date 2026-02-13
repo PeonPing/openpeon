@@ -23,14 +23,14 @@ export const metadata: Metadata = {
     template: "%s — OpenPeon",
   },
   description:
-    "CESP (Coding Event Sound Pack Specification) is an open standard for coding event sounds. Browse 40+ sound packs for Claude Code, Cursor, Codex, and any agentic IDE.",
+    "CESP (Coding Event Sound Pack Specification) is an open standard for coding event sounds. Browse sound packs for Claude Code, Cursor, Codex, and any agentic IDE. Open standard, community-driven.",
   metadataBase: new URL("https://openpeon.com"),
   openGraph: {
     type: "website",
     siteName: "OpenPeon",
     title: "OpenPeon — An Open Standard for Coding Event Sounds",
     description:
-      "Browse 40+ sound packs for agentic IDEs. CESP is an open standard any coding tool can adopt.",
+      "Browse sound packs for agentic IDEs. CESP is an open standard any coding tool can adopt.",
   },
   other: {
     "llms.txt": "/llms.txt",

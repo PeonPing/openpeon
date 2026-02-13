@@ -230,9 +230,9 @@ openpeon install glados
 
 Migration is **complete**. All original peon-ping packs have been moved to the registry:
 
-1. All 36 packs have been migrated to `PeonPing/og-packs`
+1. All 40 official packs have been migrated to `PeonPing/og-packs`
 2. Each pack has an `openpeon.json` manifest
-3. All 36 packs are registered in `PeonPing/registry`
+3. All 40 official packs (plus community packs) are registered in `PeonPing/registry`
 4. `peon-ping` now fetches packs from the registry at install time
 5. The `packs/` directory has been removed from the `peon-ping` repo
 

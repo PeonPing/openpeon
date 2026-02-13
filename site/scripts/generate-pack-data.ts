@@ -271,7 +271,10 @@ async function generateFromRemote(): Promise<PackData[]> {
 
 // ── Main ────────────────────────────────────────────────────────────────────
 async function main() {
-  const useLocal = fs.existsSync(PACKS_SOURCE);
+  // Default to remote (registry) so the site includes community packs.
+  // Set PACKS_SOURCE_LOCAL=1 to force reading from local og-packs checkout.
+  const forceLocal = process.env.PACKS_SOURCE_LOCAL === "1";
+  const useLocal = forceLocal && fs.existsSync(PACKS_SOURCE);
   const packs = useLocal ? generateFromLocal() : await generateFromRemote();
 
   fs.mkdirSync(path.dirname(OUTPUT_JSON), { recursive: true });
@@ -281,7 +284,7 @@ async function main() {
   };
   fs.writeFileSync(OUTPUT_JSON, JSON.stringify(output, null, 2));
 
-  const mode = useLocal ? "local" : "remote (GitHub)";
+  const mode = useLocal ? "local" : "remote (registry)";
   console.log(
     `[generate] Done: ${packs.length} packs from ${mode}`
   );
