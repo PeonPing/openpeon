@@ -123,7 +123,7 @@ export default async function PackDetailPage({
           Use this pack
         </h2>
         <CodeBlock
-          code={`peon --pack ${pack.name}`}
+          code={`peon packs use ${pack.name}`}
           language="bash"
         />
         <p className="text-xs text-text-dim mt-2">
