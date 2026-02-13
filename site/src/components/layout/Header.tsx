@@ -19,8 +19,9 @@ export function Header() {
       <div className="mx-auto max-w-5xl flex items-center justify-between px-4 h-14">
         <Link
           href="/"
-          className="font-display text-xl text-text-primary hover:text-gold transition-colors"
+          className="flex items-center gap-2 font-display text-xl text-text-primary hover:text-gold transition-colors"
         >
+          <img src="/peon-logo.jpeg" alt="OpenPeon" className="w-8 h-8 rounded-full" />
           OpenPeon
         </Link>
 
