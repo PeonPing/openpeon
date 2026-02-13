@@ -6,6 +6,7 @@ import { CESP_CATEGORIES } from "@/lib/categories";
 import { CategoryBadge } from "@/components/ui/CategoryBadge";
 import { CodeBlock } from "@/components/ui/CodeBlock";
 import { PackSounds } from "./PackSounds";
+import { ErrorBoundary } from "@/components/ui/ErrorBoundary";
 
 export function generateStaticParams() {
   return getPackNames().map((name) => ({ name }));
@@ -111,7 +112,9 @@ export default async function PackDetailPage({
                   </span>
                 )}
               </div>
-              <PackSounds sounds={cat.sounds} packName={pack.name} categoryName={cat.name} />
+              <ErrorBoundary>
+                <PackSounds sounds={cat.sounds} packName={pack.name} categoryName={cat.name} />
+              </ErrorBoundary>
             </section>
           );
         })}

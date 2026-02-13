@@ -4,6 +4,7 @@ import { useState, useMemo } from "react";
 import { getAllPacks, getLanguageLabels } from "@/lib/packs";
 import { PackCard } from "@/components/ui/PackCard";
 import { SearchInput } from "@/components/ui/SearchInput";
+import { ErrorBoundary } from "@/components/ui/ErrorBoundary";
 
 export default function PacksPage() {
   const allPacks = getAllPacks();
@@ -61,19 +62,21 @@ export default function PacksPage() {
         Showing {filtered.length} of {allPacks.length} packs
       </p>
 
-      {filtered.length > 0 ? (
-        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          {filtered.map((pack) => (
-            <PackCard key={pack.name} pack={pack} />
-          ))}
-        </div>
-      ) : (
-        <div className="rounded-lg border border-surface-border bg-surface-card p-12 text-center">
-          <p className="text-text-muted">
-            No packs found matching your search.
-          </p>
-        </div>
-      )}
+      <ErrorBoundary>
+        {filtered.length > 0 ? (
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            {filtered.map((pack) => (
+              <PackCard key={pack.name} pack={pack} />
+            ))}
+          </div>
+        ) : (
+          <div className="rounded-lg border border-surface-border bg-surface-card p-12 text-center">
+            <p className="text-text-muted">
+              No packs found matching your search.
+            </p>
+          </div>
+        )}
+      </ErrorBoundary>
     </div>
   );
 }

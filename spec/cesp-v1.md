@@ -21,7 +21,7 @@ CESP defines:
 - **Category**: A semantic type of coding event (e.g., `session.start`, `task.complete`).
 - **Manifest**: The `openpeon.json` file that describes a pack's metadata and maps categories to sounds.
 - **Player**: Any coding tool that implements CESP by mapping its internal events to CESP categories and playing sounds from installed packs.
-- **Registry**: A directory of available packs (see [Registry Design](../registry-design.md)).
+- **Registry**: A directory of available packs (see [Registry Design](../docs/registry-design.md)).
 
 The key words "MUST", "SHOULD", "MAY", and "OPTIONAL" in this document are to be interpreted as described in [RFC 2119](https://www.ietf.org/rfc/rfc2119.txt).
 
@@ -370,7 +370,7 @@ Packs MAY be distributed via the OpenPeon registry. Registry-submitted packs hav
 - `license` MUST be provided.
 - All audio files MUST pass format validation.
 
-See [Registry Design](../registry-design.md) for the full registry specification.
+See [Registry Design](../docs/registry-design.md) for the full registry specification.
 
 ## Appendix A: JSON Schema
 

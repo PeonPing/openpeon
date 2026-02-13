@@ -1,0 +1,12 @@
+{
+  "name": "openpeon",
+  "private": true,
+  "scripts": {
+    "test": "node --import tsx --test tests/**/*.test.ts",
+    "test:schema": "node --import tsx --test tests/schema-validation.test.ts"
+  },
+  "devDependencies": {
+    "ajv": "^8",
+    "tsx": "^4.21.0"
+  }
+}

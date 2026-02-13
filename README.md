@@ -126,7 +126,7 @@ All 40 official packs live in [PeonPing/og-packs](https://github.com/PeonPing/og
 
 The OpenPeon registry is **live** at [PeonPing/registry](https://github.com/PeonPing/registry). The registry index is published to [peonping.github.io/registry/index.json](https://peonping.github.io/registry/index.json) and currently lists 43 packs (40 official + 3 community).
 
-Packs are hosted in their own repos. The 40 official packs are in [PeonPing/og-packs](https://github.com/PeonPing/og-packs). Community packs live in contributor repos. See [Registry Design](registry-design.md) for the architecture details.
+Packs are hosted in their own repos. The 40 official packs are in [PeonPing/og-packs](https://github.com/PeonPing/og-packs). Community packs live in contributor repos. See [Registry Design](docs/registry-design.md) for the architecture details.
 
 ## Implementations
 
@@ -139,13 +139,18 @@ Packs are hosted in their own repos. The 40 official packs are in [PeonPing/og-p
 
 ```
 spec/
-  cesp-v1.md                  # The specification
-  openpeon.schema.json         # JSON Schema for manifests
-  registry-entry.schema.json   # JSON Schema for registry entries
+  cesp-v1.md                   # The specification
+  openpeon.schema.json          # JSON Schema for manifests
+  registry-entry.schema.json    # JSON Schema for registry entries
+examples/                        # Example sound packs (peon, glados)
 scripts/
-  generate-registry.ts         # Registry generation script
-site/                           # The openpeon.com website
-registry-design.md             # Registry architecture blueprint
+  generate-registry.ts          # Registry generation script
+site/                            # The openpeon.com website
+docs/
+  registry-design.md            # Registry architecture blueprint
+tests/                           # Schema validation tests
+CLAUDE.md                        # Project documentation for AI assistants
+CONTRIBUTING.md                  # Contribution guide
 ```
 
 ## License
