@@ -2,8 +2,24 @@
 
 import Link from "next/link";
 import type { PackMeta } from "@/lib/types";
-import { CategoryBadge } from "./CategoryBadge";
 import { AudioPlayer } from "./AudioPlayer";
+
+const TIER_STYLES: Record<string, string> = {
+  official: "bg-success/10 text-success border-success/20",
+  verified: "bg-blue-500/10 text-blue-400 border-blue-500/20",
+  community: "bg-purple-500/10 text-purple-400 border-purple-500/20",
+};
+
+function TierBadge({ tier }: { tier: string }) {
+  const style = TIER_STYLES[tier] || TIER_STYLES.community;
+  return (
+    <span
+      className={`font-mono text-[10px] px-2 py-0.5 rounded-full uppercase border ${style}`}
+    >
+      {tier}
+    </span>
+  );
+}
 
 export function PackCard({ pack }: { pack: PackMeta }) {
   const preview = pack.previewSounds[0];
@@ -11,49 +27,61 @@ export function PackCard({ pack }: { pack: PackMeta }) {
   return (
     <Link
       href={`/packs/${pack.name}`}
-      className="group block rounded-lg border border-surface-border bg-surface-card p-4 transition-all duration-200 hover:border-gold/50 hover:bg-surface-card/80"
+      className="group flex flex-col rounded-lg border border-surface-border bg-surface-card p-4 transition-all duration-200 hover:border-gold/50 hover:bg-surface-card/80"
     >
-      <div className="flex items-start justify-between gap-2 mb-2">
-        <h3 className="font-display text-lg text-text-primary group-hover:text-gold transition-colors truncate">
-          {pack.displayName}
-        </h3>
-        <span className="flex-shrink-0 rounded-full bg-surface-border px-2 py-0.5 text-[10px] font-mono text-text-muted uppercase">
-          {pack.language}
+      {/* Name */}
+      <h3 className="font-display text-lg text-text-primary group-hover:text-gold transition-colors truncate mb-1">
+        {pack.displayName}
+      </h3>
+
+      {/* Description */}
+      {pack.description && (
+        <p className="text-xs text-text-muted mb-2 line-clamp-2">
+          {pack.description}
+        </p>
+      )}
+
+      {/* Tags */}
+      {pack.tags && pack.tags.length > 0 && (
+        <div className="flex flex-wrap gap-1 mb-2">
+          {pack.tags.slice(0, 5).map((tag) => (
+            <span
+              key={tag}
+              className="font-mono text-[10px] px-1.5 py-0.5 rounded bg-surface-bg border border-surface-border text-text-dim"
+            >
+              {tag}
+            </span>
+          ))}
+        </div>
+      )}
+
+      {/* Meta line */}
+      <div className="font-mono text-[11px] text-text-dim mb-2">
+        {pack.author.name || pack.author.github}
+        <span className="mx-1 opacity-50">&middot;</span>
+        {pack.totalSoundCount} sounds
+        <span className="mx-1 opacity-50">&middot;</span>
+        v{pack.version}
+      </div>
+
+      {/* Badges */}
+      <div className="flex gap-1.5 mb-3">
+        <TierBadge tier={pack.trustTier} />
+        <span className="font-mono text-[10px] px-2 py-0.5 rounded-full uppercase border border-amber-700/50 text-amber-500">
+          {pack.languageLabel}
         </span>
       </div>
 
-      <div className="text-xs text-text-muted mb-3">
-        <a
-          href={pack.franchise.url}
-          onClick={(e) => e.stopPropagation()}
-          className="hover:text-text-muted transition-colors"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          {pack.franchise.name}
-        </a>
-        <span className="mx-1.5 text-text-dim">·</span>
-        <span>{pack.totalSoundCount} sounds</span>
-      </div>
-
-      <div className="flex flex-wrap gap-1 mb-3">
-        {pack.categoryNames.slice(0, 4).map((cat) => (
-          <CategoryBadge key={cat} name={cat} size="xs" />
-        ))}
-        {pack.categoryNames.length > 4 && (
-          <span className="text-[10px] text-text-dim self-center">
-            +{pack.categoryNames.length - 4}
-          </span>
-        )}
-      </div>
-
+      {/* Audio preview */}
       {preview && (
-        <AudioPlayer
-          url={preview.audioUrl}
-          label={preview.label}
-          id={`card-${pack.name}`}
-          compact
-        />
+        <div className="mt-auto">
+          <AudioPlayer
+            url={preview.audioUrl}
+            label={preview.label}
+            id={`card-${pack.name}`}
+            compact
+          />
+        </div>
       )}
     </Link>
   );
