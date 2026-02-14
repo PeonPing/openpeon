@@ -24,6 +24,7 @@ export interface PackMeta {
   languageLabel: string;
   description?: string;
   tags?: string[];
+  trustTier: string;
   franchise: FranchiseInfo;
   categories: CategoryData[];
   categoryNames: string[];
