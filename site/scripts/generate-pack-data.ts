@@ -101,6 +101,8 @@ interface RegistryEntry {
   source_repo: string;
   source_ref: string;
   source_path: string;
+  trust_tier?: string;
+  tags?: string[];
 }
 
 interface PackData {
@@ -113,6 +115,7 @@ interface PackData {
   languageLabel: string;
   description?: string;
   tags?: string[];
+  trustTier: string;
   franchise: Franchise;
   categories: { name: string; sounds: { file: string; label: string; audioUrl: string }[] }[];
   categoryNames: string[];
@@ -138,7 +141,7 @@ const REGISTRY_INDEX_URL =
 // ── Helpers ─────────────────────────────────────────────────────────────────
 // audioBase should be the URL of the directory containing sounds/
 // e.g. "https://raw.../og-packs/v1.0.0/peon" or "https://raw.../mypack/v1.0.0"
-function processManifest(manifest: Manifest, packName: string, audioBase: string): PackData {
+function processManifest(manifest: Manifest, packName: string, audioBase: string, trustTier: string = "community", registryTags?: string[]): PackData {
   const categories: PackData["categories"] = [];
   const previewSounds: PackData["previewSounds"] = [];
   let soundCount = 0;
@@ -172,7 +175,8 @@ function processManifest(manifest: Manifest, packName: string, audioBase: string
     language: lang,
     languageLabel: LANGUAGE_LABELS[lang] || lang,
     description: manifest.description,
-    tags: manifest.tags,
+    tags: manifest.tags?.length ? manifest.tags : (registryTags || undefined),
+    trustTier,
     franchise: FRANCHISE_MAP[packName] || { name: "Unknown", url: "" },
     categories,
     categoryNames: categories.map((c) => c.name),
@@ -258,7 +262,7 @@ async function generateFromRemote(): Promise<PackData[]> {
           ? `${rawBase}/${entry.source_path}`
           : rawBase;
 
-        return processManifest(manifest, packName, audioBase);
+        return processManifest(manifest, packName, audioBase, entry.trust_tier || "community", entry.tags);
       })
     );
 
