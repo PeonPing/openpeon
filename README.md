@@ -135,6 +135,10 @@ Packs are hosted in their own repos. The 40 official packs are in [PeonPing/og-p
 | [peon-ping](https://github.com/PeonPing/peon-ping) (Claude Code, Codex, Cursor, OpenCode) | Reference implementation | 43+ packs |
 | *Your IDE here* | — | [Open a PR](https://github.com/PeonPing/openpeon/issues) |
 
+## Website
+
+The [openpeon.com](https://openpeon.com) website lets you browse all registered packs with audio previews, filterable by tag, language, and trust tier (official/community). Source is in `site/`.
+
 ## Files
 
 ```

@@ -101,14 +101,15 @@ export default function PacksPage() {
             Lang
           </span>
           <div className="flex flex-wrap gap-1.5">
-            <LangPill
+            <FilterPill
               label="All"
               count={allPacks.length}
               active={!activeLang}
               onClick={() => setActiveLang(null)}
+              variant="lang"
             />
             {allLangs.map(([lang, count]) => (
-              <LangPill
+              <FilterPill
                 key={lang}
                 label={lang.toUpperCase()}
                 count={count}
@@ -116,6 +117,7 @@ export default function PacksPage() {
                 onClick={() =>
                   setActiveLang(activeLang === lang ? null : lang)
                 }
+                variant="lang"
               />
             ))}
           </div>
@@ -154,18 +156,25 @@ export default function PacksPage() {
   );
 }
 
-// ── Filter pill components ───────────────────────────────────────────────────
+// ── Filter pill component ────────────────────────────────────────────────────
+
+const PILL_INACTIVE_STYLES = {
+  default: "border-surface-border text-text-dim hover:border-gold/50 hover:text-text-muted",
+  lang: "border-amber-700/50 text-amber-500/70 hover:border-gold/50 hover:text-gold uppercase",
+};
 
 function FilterPill({
   label,
   count,
   active,
   onClick,
+  variant = "default",
 }: {
   label: string;
   count: number;
   active: boolean;
   onClick: () => void;
+  variant?: "default" | "lang";
 }) {
   return (
     <button
@@ -173,33 +182,7 @@ function FilterPill({
       className={`font-mono text-xs px-2.5 py-1 rounded-full border transition-colors ${
         active
           ? "border-gold text-gold bg-gold/10"
-          : "border-surface-border text-text-dim hover:border-gold/50 hover:text-text-muted"
-      }`}
-    >
-      {label}{" "}
-      <span className="opacity-50">{count}</span>
-    </button>
-  );
-}
-
-function LangPill({
-  label,
-  count,
-  active,
-  onClick,
-}: {
-  label: string;
-  count: number;
-  active: boolean;
-  onClick: () => void;
-}) {
-  return (
-    <button
-      onClick={onClick}
-      className={`font-mono text-xs px-2.5 py-1 rounded-full border transition-colors uppercase ${
-        active
-          ? "border-gold text-gold bg-gold/10"
-          : "border-amber-700/50 text-amber-500/70 hover:border-gold/50 hover:text-gold"
+          : PILL_INACTIVE_STYLES[variant]
       }`}
     >
       {label}{" "}

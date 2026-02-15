@@ -15,19 +15,3 @@ export function getPackNames(): string[] {
   return packsData.packs.map((p) => p.name);
 }
 
-export function getLanguages(): string[] {
-  const langs = new Set(packsData.packs.map((p) => p.language));
-  return Array.from(langs).sort();
-}
-
-export function getLanguageLabels(): { code: string; label: string }[] {
-  const map = new Map<string, string>();
-  for (const p of packsData.packs) {
-    if (!map.has(p.language)) {
-      map.set(p.language, p.languageLabel);
-    }
-  }
-  return Array.from(map.entries())
-    .map(([code, label]) => ({ code, label }))
-    .sort((a, b) => a.label.localeCompare(b.label));
-}
