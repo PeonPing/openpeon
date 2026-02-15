@@ -15,3 +15,7 @@ export function getPackNames(): string[] {
   return packsData.packs.map((p) => p.name);
 }
 
+export function getGeneratedAt(): string {
+  return packsData.generatedAt;
+}
+

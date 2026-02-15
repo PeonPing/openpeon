@@ -1,13 +1,14 @@
 "use client";
 
 import { useState, useMemo } from "react";
-import { getAllPacks } from "@/lib/packs";
+import { getAllPacks, getGeneratedAt } from "@/lib/packs";
 import { PackCard } from "@/components/ui/PackCard";
 import { SearchInput } from "@/components/ui/SearchInput";
 import { ErrorBoundary } from "@/components/ui/ErrorBoundary";
 
 export default function PacksPage() {
   const allPacks = getAllPacks();
+  const generatedAt = getGeneratedAt();
   const [query, setQuery] = useState("");
   const [activeTag, setActiveTag] = useState<string | null>(null);
   const [activeLang, setActiveLang] = useState<string | null>(null);
@@ -133,9 +134,10 @@ export default function PacksPage() {
         />
       </div>
 
-      <p className="text-xs text-text-dim mb-4">
-        Showing {filtered.length} of {allPacks.length} packs
-      </p>
+      <div className="flex items-center justify-between text-xs text-text-dim mb-4">
+        <p>Showing {filtered.length} of {allPacks.length} packs</p>
+        <p>Last updated {new Date(generatedAt).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}</p>
+      </div>
 
       <ErrorBoundary>
         {filtered.length > 0 ? (
