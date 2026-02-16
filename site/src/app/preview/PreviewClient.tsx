@@ -41,6 +41,63 @@ const ALL_CATEGORY_KEYS = Object.keys(CESP_CATEGORIES);
 const REGISTRY_CACHE_KEY = "openpeon-preview-registry";
 const REGISTRY_CACHE_TTL_MS = 5 * 60 * 1000; // 5 minutes
 
+// ── Validation ───────────────────────────────────────────────────────────────
+
+interface ValidationWarning {
+  level: "error" | "warn";
+  message: string;
+}
+
+function validateManifest(manifest: PackManifest): ValidationWarning[] {
+  const warnings: ValidationWarning[] = [];
+
+  if (!manifest.name) {
+    warnings.push({ level: "error", message: "Missing required field: name" });
+  }
+  if (!manifest.display_name) {
+    warnings.push({ level: "warn", message: "Missing recommended field: display_name" });
+  }
+  if (!manifest.version) {
+    warnings.push({ level: "warn", message: "Missing recommended field: version" });
+  }
+  if (!manifest.author) {
+    warnings.push({ level: "warn", message: "Missing recommended field: author" });
+  }
+  if (!manifest.categories || Object.keys(manifest.categories).length === 0) {
+    warnings.push({ level: "error", message: "No categories defined" });
+  }
+
+  // Check for core categories
+  const CORE = ["session.start", "task.acknowledge", "task.complete", "task.error", "input.required", "resource.limit"];
+  const present = new Set(Object.keys(manifest.categories || {}));
+  const missingCore = CORE.filter((c) => !present.has(c));
+  if (missingCore.length > 0) {
+    warnings.push({
+      level: "warn",
+      message: `Missing core categories: ${missingCore.join(", ")}`,
+    });
+  }
+
+  // Check for unknown categories
+  const ALL_KNOWN = [...CORE, "user.spam", "session.end", "task.progress"];
+  const unknown = [...present].filter((c) => !ALL_KNOWN.includes(c));
+  if (unknown.length > 0) {
+    warnings.push({
+      level: "warn",
+      message: `Unknown categories: ${unknown.join(", ")}`,
+    });
+  }
+
+  // Check for empty categories
+  for (const [catKey, catData] of Object.entries(manifest.categories || {})) {
+    if (!catData.sounds || catData.sounds.length === 0) {
+      warnings.push({ level: "warn", message: `Category "${catKey}" has no sounds` });
+    }
+  }
+
+  return warnings;
+}
+
 // ── Sub-components ───────────────────────────────────────────────────────────
 
 function DropdownList({
@@ -262,6 +319,7 @@ export function PreviewClient() {
   const [manifest, setManifest] = useState<PackManifest | null>(null);
   const [audioBase, setAudioBase] = useState("");
   const [resolvedRepo, setResolvedRepo] = useState("");
+  const [validationWarnings, setValidationWarnings] = useState<ValidationWarning[]>([]);
 
   // Tour (Play All) state
   const [touring, setTouring] = useState(false);
@@ -393,6 +451,7 @@ export function PreviewClient() {
     setLoading(true);
     setError(null);
     setManifest(null);
+    setValidationWarnings([]);
     setShowDropdown(false);
 
     // Update URL hash
@@ -429,6 +488,7 @@ export function PreviewClient() {
 
     const base = `https://raw.githubusercontent.com/${ownerRepo}/${found.branch}${subpath ? "/" + subpath : ""}`;
     setManifest(found.manifest);
+    setValidationWarnings(validateManifest(found.manifest));
     setAudioBase(base);
     setResolvedRepo(subpath ? ownerRepo + "/" + subpath : ownerRepo);
     setLoading(false);
@@ -637,6 +697,30 @@ export function PreviewClient() {
       {error && (
         <div className="rounded-lg border border-surface-border bg-surface-card p-12 text-center mb-8">
           <p className="text-text-dim">{error}</p>
+        </div>
+      )}
+
+      {/* Validation warnings */}
+      {validationWarnings.length > 0 && (
+        <div className="rounded-lg border border-surface-border bg-surface-card p-4 mb-8">
+          <h3 className="font-mono text-xs font-semibold text-text-muted mb-2">
+            Manifest Validation
+          </h3>
+          <div className="flex flex-col gap-1.5">
+            {validationWarnings.map((w, i) => (
+              <div
+                key={i}
+                className={`text-xs flex items-start gap-2 ${
+                  w.level === "error" ? "text-red-400" : "text-amber-400"
+                }`}
+              >
+                <span className="font-mono shrink-0">
+                  {w.level === "error" ? "ERR" : "WARN"}
+                </span>
+                <span>{w.message}</span>
+              </div>
+            ))}
+          </div>
         </div>
       )}
 

@@ -53,6 +53,23 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${inter.variable} ${jetbrainsMono.variable}`}>
       <body className="min-h-screen flex flex-col antialiased">
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "WebSite",
+              name: "OpenPeon",
+              url: "https://openpeon.com",
+              description: "An open standard for coding event sounds. Browse CESP sound packs for Claude Code, Cursor, Codex, and any agentic IDE.",
+              potentialAction: {
+                "@type": "SearchAction",
+                target: "https://openpeon.com/packs?q={search_term_string}",
+                "query-input": "required name=search_term_string",
+              },
+            }),
+          }}
+        />
         <AudioProvider>
           <Header />
           <main className="flex-1">{children}</main>

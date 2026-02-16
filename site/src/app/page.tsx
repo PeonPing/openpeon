@@ -4,20 +4,18 @@ import { CESP_CATEGORIES } from "@/lib/categories";
 import { PackCard } from "@/components/ui/PackCard";
 import { CodeBlock } from "@/components/ui/CodeBlock";
 
-const FEATURED_PACKS = [
-  "peon",
-  "glados",
-  "sc_kerrigan",
-  "tf2_engineer",
-  "sopranos",
-  "hd2_helldiver",
-];
+const TIER_ORDER: Record<string, number> = { official: 0, verified: 1, community: 2 };
 
 export default function HomePage() {
   const allPacks = getAllPacks();
-  const featured = FEATURED_PACKS.map((name) =>
-    allPacks.find((p) => p.name === name)
-  ).filter(Boolean);
+  const featured = [...allPacks]
+    .sort((a, b) => {
+      const ta = TIER_ORDER[a.trustTier] ?? 9;
+      const tb = TIER_ORDER[b.trustTier] ?? 9;
+      if (ta !== tb) return ta - tb;
+      return b.totalSoundCount - a.totalSoundCount;
+    })
+    .slice(0, 6);
 
   return (
     <div className="mx-auto max-w-5xl px-4">
