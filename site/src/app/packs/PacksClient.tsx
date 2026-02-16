@@ -304,9 +304,15 @@ export function PacksClient() {
           </div>
         ) : (
           <div className="rounded-lg border border-surface-border bg-surface-card p-12 text-center">
-            <p className="text-text-muted">
+            <p className="text-text-muted mb-3">
               No packs found matching your filters.
             </p>
+            <a
+              href="/requests"
+              className="text-sm text-gold hover:underline transition-colors"
+            >
+              Request this pack &rarr;
+            </a>
           </div>
         )}
       </ErrorBoundary>
