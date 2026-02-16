@@ -30,6 +30,8 @@ export interface PackMeta {
   categoryNames: string[];
   totalSoundCount: number;
   previewSounds: SoundEntry[];
+  sourceRepo?: string;
+  sourcePath?: string;
 }
 
 export interface PacksData {
