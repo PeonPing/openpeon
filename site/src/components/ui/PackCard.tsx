@@ -55,6 +55,16 @@ export function PackCard({ pack }: { pack: PackMeta }) {
           compact
         />
       )}
+
+      {pack.sourceRepo && (
+        <Link
+          href={`/preview#${encodeURIComponent(pack.sourcePath ? pack.sourceRepo + "/" + pack.sourcePath : pack.sourceRepo)}`}
+          onClick={(e) => e.stopPropagation()}
+          className="block mt-2 text-[11px] font-medium text-gold hover:text-gold/80 transition-colors"
+        >
+          preview &rarr;
+        </Link>
+      )}
     </Link>
   );
 }
