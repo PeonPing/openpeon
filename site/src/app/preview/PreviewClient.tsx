@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback, useRef } from "react";
+import { useState, useEffect, useCallback, useRef, useMemo } from "react";
 import { AudioPlayer, useAudio } from "@/components/ui/AudioPlayer";
 import { CESP_CATEGORIES } from "@/lib/categories";
 import { CategoryBadge } from "@/components/ui/CategoryBadge";
@@ -34,7 +34,226 @@ interface RegistryPack {
   pending?: boolean;
 }
 
-// ── Component ────────────────────────────────────────────────────────────────
+// ── Constants ────────────────────────────────────────────────────────────────
+
+const ALL_CATEGORY_KEYS = Object.keys(CESP_CATEGORIES);
+
+const REGISTRY_CACHE_KEY = "openpeon-preview-registry";
+const REGISTRY_CACHE_TTL_MS = 5 * 60 * 1000; // 5 minutes
+
+// ── Sub-components ───────────────────────────────────────────────────────────
+
+function DropdownList({
+  pending,
+  accepted,
+  highlightIdx,
+  dropdownRef,
+  onSelect,
+}: {
+  pending: RegistryPack[];
+  accepted: RegistryPack[];
+  highlightIdx: number;
+  dropdownRef: React.RefObject<HTMLDivElement | null>;
+  onSelect: (pack: RegistryPack) => void;
+}) {
+  let globalIdx = 0;
+
+  const renderItem = (pack: RegistryPack) => {
+    const idx = globalIdx++;
+    const fullPath = pack.source_path
+      ? pack.source_repo + "/" + pack.source_path
+      : pack.source_repo;
+    return (
+      <button
+        key={fullPath}
+        onMouseDown={(e) => {
+          e.preventDefault();
+          onSelect(pack);
+        }}
+        className={`w-full text-left px-3 py-2.5 border-b border-surface-border last:border-b-0 transition-colors ${
+          idx === highlightIdx ? "bg-gold-glow" : "hover:bg-surface-bg/50"
+        }`}
+      >
+        <div className="flex items-center gap-2">
+          <span className="text-sm text-text-primary">
+            {pack.display_name || pack.name}
+          </span>
+          {pack.pending && (
+            <span className="text-[10px] font-semibold text-gold">
+              PENDING
+            </span>
+          )}
+        </div>
+        <div className="font-mono text-[11px] text-text-dim">{fullPath}</div>
+        {pack.categories && pack.categories.length > 0 && (
+          <div className="flex flex-wrap gap-1 mt-1">
+            {pack.categories.map((c) => (
+              <CategoryBadge key={c} name={c} size="xs" />
+            ))}
+          </div>
+        )}
+      </button>
+    );
+  };
+
+  return (
+    <div
+      ref={dropdownRef}
+      className="absolute top-full left-0 right-0 mt-1 max-h-80 overflow-y-auto rounded-lg border border-surface-border bg-surface-card z-20"
+    >
+      {pending.length > 0 && (
+        <>
+          <div className="px-3 py-1.5 text-[10px] font-mono uppercase tracking-wider text-gold bg-surface-bg/50 border-b border-surface-border">
+            Pending
+          </div>
+          {pending.map(renderItem)}
+        </>
+      )}
+      {accepted.length > 0 && (
+        <>
+          <div className="px-3 py-1.5 text-[10px] font-mono uppercase tracking-wider text-text-dim bg-surface-bg/50 border-b border-surface-border">
+            Accepted
+          </div>
+          {accepted.map(renderItem)}
+        </>
+      )}
+    </div>
+  );
+}
+
+function PackHeader({
+  manifest,
+  categories,
+  resolvedRepo,
+}: {
+  manifest: PackManifest;
+  categories: Record<string, ManifestCategory>;
+  resolvedRepo: string;
+}) {
+  const formats = useMemo(() => {
+    const set = new Set<string>();
+    for (const cat of Object.values(categories)) {
+      for (const s of cat.sounds || []) {
+        const ext = s.file.split(".").pop()?.toLowerCase();
+        if (ext) set.add(ext);
+      }
+    }
+    return [...set];
+  }, [categories]);
+
+  const totalSounds = useMemo(
+    () =>
+      Object.values(categories).reduce(
+        (sum, cat) => sum + (cat.sounds?.length || 0),
+        0
+      ),
+    [categories]
+  );
+
+  return (
+    <div className="text-center mb-8">
+      <h2 className="font-display text-2xl text-text-primary mb-1">
+        {manifest.display_name || manifest.name}
+      </h2>
+      <div className="flex flex-wrap items-center justify-center gap-x-3 gap-y-1 text-xs text-text-muted">
+        {manifest.version && (
+          <span className="font-mono">v{manifest.version}</span>
+        )}
+        {manifest.author?.name && (
+          <span>
+            by{" "}
+            <a
+              href={`https://github.com/${manifest.author.github || manifest.author.name}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hover:text-gold transition-colors"
+            >
+              {manifest.author.name}
+            </a>
+          </span>
+        )}
+        {manifest.language && (
+          <span className="rounded-full bg-surface-border px-2 py-0.5 text-[10px] font-mono text-text-muted uppercase">
+            {manifest.language}
+          </span>
+        )}
+        <span>{totalSounds} sounds</span>
+        {formats.length > 0 && (
+          <span className="rounded-full bg-surface-border px-2 py-0.5 text-[10px] font-mono text-text-muted uppercase">
+            {formats.join(" / ")}
+          </span>
+        )}
+        <a
+          href={`https://github.com/${resolvedRepo}`}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="font-mono hover:text-gold transition-colors"
+        >
+          {resolvedRepo}
+        </a>
+      </div>
+    </div>
+  );
+}
+
+function CategoryCard({
+  catKey,
+  catData,
+  audioBase,
+  touringCategory,
+}: {
+  catKey: string;
+  catData?: ManifestCategory;
+  audioBase: string;
+  touringCategory: string | null;
+}) {
+  const catInfo = CESP_CATEGORIES[catKey];
+  const sounds = catData?.sounds || [];
+
+  return (
+    <div
+      className={`rounded-lg border bg-surface-card p-4 transition-all duration-300 ${
+        touringCategory === catKey
+          ? "border-gold shadow-[0_0_12px_rgba(255,171,1,0.3)]"
+          : sounds.length > 0
+            ? "border-surface-border"
+            : "border-surface-border/50 opacity-50"
+      }`}
+    >
+      <div className="font-mono text-xs font-semibold text-gold mb-0.5">
+        {catKey}
+      </div>
+      <div className="text-xs text-text-dim mb-1">{catInfo.description}</div>
+      <div
+        className={`text-[10px] uppercase tracking-wider mb-3 ${
+          catInfo.tier === "core" ? "text-gold" : "text-text-dim"
+        }`}
+      >
+        {catInfo.tier === "core" ? "core" : "extended"}
+      </div>
+
+      {sounds.length === 0 ? (
+        <p className="text-xs text-text-dim italic">No sounds</p>
+      ) : (
+        <div className="flex flex-col gap-1.5">
+          {sounds.map((sound, idx) => (
+            <AudioPlayer
+              key={`${catKey}-${idx}`}
+              url={`${audioBase}/${sound.file}`}
+              label={
+                sound.label || sound.file.split("/").pop() || sound.file
+              }
+              id={`preview-${catKey}-${idx}`}
+              compact
+            />
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ── Main component ───────────────────────────────────────────────────────────
 
 export function PreviewClient() {
   const [input, setInput] = useState("");
@@ -63,9 +282,29 @@ export function PreviewClient() {
   const inputRef = useRef<HTMLInputElement>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
-  // Load registry + pending PRs for autocomplete
+  // Use ref for input so loadPack doesn't depend on input state
+  const inputValRef = useRef(input);
+  useEffect(() => {
+    inputValRef.current = input;
+  }, [input]);
+
+  // Load registry + pending PRs for autocomplete (with cache)
   useEffect(() => {
     async function load() {
+      // Check cache
+      try {
+        const raw = localStorage.getItem(REGISTRY_CACHE_KEY);
+        if (raw) {
+          const cached = JSON.parse(raw);
+          if (Date.now() - cached.timestamp < REGISTRY_CACHE_TTL_MS) {
+            setRegistry(cached.data);
+            return;
+          }
+        }
+      } catch {
+        // Cache miss — fetch fresh
+      }
+
       // Accepted packs
       const accepted: RegistryPack[] = [];
       try {
@@ -75,9 +314,11 @@ export function PreviewClient() {
         for (const p of data.packs || data || []) {
           accepted.push({ ...p, pending: false });
         }
-      } catch {}
+      } catch (err) {
+        console.warn("Failed to fetch registry index:", err);
+      }
 
-      // Pending PRs
+      // Pending PRs — sequential to avoid rate limits
       const pending: RegistryPack[] = [];
       try {
         const prs = await fetch(
@@ -112,35 +353,32 @@ export function PreviewClient() {
               source_path: pathMatch ? pathMatch[1] : undefined,
               pending: true,
             });
-          } catch {}
+          } catch (err) {
+            console.warn(`Failed to enrich PR #${pr.number}:`, err);
+          }
         }
-      } catch {}
+      } catch (err) {
+        console.warn("Failed to fetch pending PRs:", err);
+      }
 
-      setRegistry([...pending, ...accepted]);
+      const result = [...pending, ...accepted];
+      setRegistry(result);
+
+      // Write cache
+      try {
+        localStorage.setItem(
+          REGISTRY_CACHE_KEY,
+          JSON.stringify({ data: result, timestamp: Date.now() })
+        );
+      } catch {
+        // Storage unavailable — non-critical
+      }
     }
     load();
   }, []);
 
-  // Load from URL hash
-  useEffect(() => {
-    if (window.location.hash) {
-      const repo = decodeURIComponent(window.location.hash.slice(1));
-      setInput(repo);
-      loadPack(repo);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  const filtered = input.trim()
-    ? registry.filter(
-        (p) =>
-          (p.display_name || p.name).toLowerCase().includes(input.toLowerCase()) ||
-          p.source_repo.toLowerCase().includes(input.toLowerCase())
-      )
-    : registry;
-
   const loadPack = useCallback(async (raw?: string) => {
-    const val = (raw || input).trim();
+    const val = (raw || inputValRef.current).trim();
     if (!val) return;
 
     // Parse input: accept full URL, owner/repo, or owner/repo/subpath
@@ -194,7 +432,35 @@ export function PreviewClient() {
     setAudioBase(base);
     setResolvedRepo(subpath ? ownerRepo + "/" + subpath : ownerRepo);
     setLoading(false);
-  }, [input]);
+  }, []);
+
+  // Load from URL hash
+  useEffect(() => {
+    if (window.location.hash) {
+      const repo = decodeURIComponent(window.location.hash.slice(1));
+      setInput(repo);
+      loadPack(repo);
+    }
+  }, [loadPack]);
+
+  const filtered = input.trim()
+    ? registry.filter(
+        (p) =>
+          (p.display_name || p.name)
+            .toLowerCase()
+            .includes(input.toLowerCase()) ||
+          p.source_repo.toLowerCase().includes(input.toLowerCase())
+      )
+    : registry;
+
+  const pendingItems = useMemo(
+    () => filtered.filter((p) => p.pending),
+    [filtered]
+  );
+  const acceptedItems = useMemo(
+    () => filtered.filter((p) => !p.pending),
+    [filtered]
+  );
 
   const selectPack = (pack: RegistryPack) => {
     const fullPath = pack.source_path
@@ -230,8 +496,6 @@ export function PreviewClient() {
     }
   };
 
-  // Build category sections from manifest
-  const allCategoryKeys = Object.keys(CESP_CATEGORIES);
   const categories = manifest?.categories || {};
 
   // Play All tour
@@ -252,7 +516,7 @@ export function PreviewClient() {
         }, 100);
       });
 
-    for (const catKey of allCategoryKeys) {
+    for (const catKey of ALL_CATEGORY_KEYS) {
       if (tourAbortRef.current) break;
       const sounds = manifest.categories[catKey]?.sounds || [];
       if (!sounds.length) continue;
@@ -269,17 +533,11 @@ export function PreviewClient() {
         play(url, id);
 
         // Wait for this sound to finish by polling currentId ref
+        // (AudioProvider sets currentId to null on ended event)
         await new Promise<void>((resolve) => {
-          // Small initial delay to let the audio start
           setTimeout(() => {
             const check = setInterval(() => {
-              if (tourAbortRef.current) {
-                clearInterval(check);
-                resolve();
-                return;
-              }
-              // Sound finished when currentId is no longer our id
-              if (currentIdRef.current !== id) {
+              if (tourAbortRef.current || currentIdRef.current !== id) {
                 clearInterval(check);
                 resolve();
               }
@@ -287,13 +545,11 @@ export function PreviewClient() {
           }, 300);
         });
 
-        // Gap between sounds
         if (!tourAbortRef.current) {
           await delay(500);
         }
       }
 
-      // Pause between categories
       if (!tourAbortRef.current) {
         await delay(800);
       }
@@ -301,7 +557,7 @@ export function PreviewClient() {
 
     setTouring(false);
     setTouringCategory(null);
-  }, [manifest, audioBase, allCategoryKeys, play]);
+  }, [manifest, audioBase, play]);
 
   const stopTour = useCallback(() => {
     tourAbortRef.current = true;
@@ -356,78 +612,15 @@ export function PreviewClient() {
           </button>
         </div>
 
-        {/* Autocomplete dropdown */}
-        {showDropdown && filtered.length > 0 && (() => {
-          const pendingItems = filtered.filter((p) => p.pending);
-          const acceptedItems = filtered.filter((p) => !p.pending);
-          let globalIdx = 0;
-
-          const renderItem = (pack: RegistryPack) => {
-            const idx = globalIdx++;
-            const fullPath = pack.source_path
-              ? pack.source_repo + "/" + pack.source_path
-              : pack.source_repo;
-            return (
-              <button
-                key={fullPath}
-                onMouseDown={(e) => {
-                  e.preventDefault();
-                  selectPack(pack);
-                }}
-                className={`w-full text-left px-3 py-2.5 border-b border-surface-border last:border-b-0 transition-colors ${
-                  idx === highlightIdx
-                    ? "bg-gold-glow"
-                    : "hover:bg-surface-bg/50"
-                }`}
-              >
-                <div className="flex items-center gap-2">
-                  <span className="text-sm text-text-primary">
-                    {pack.display_name || pack.name}
-                  </span>
-                  {pack.pending && (
-                    <span className="text-[10px] font-semibold text-gold">
-                      PENDING
-                    </span>
-                  )}
-                </div>
-                <div className="font-mono text-[11px] text-text-dim">
-                  {fullPath}
-                </div>
-                {pack.categories && pack.categories.length > 0 && (
-                  <div className="flex flex-wrap gap-1 mt-1">
-                    {pack.categories.map((c) => (
-                      <CategoryBadge key={c} name={c} size="xs" />
-                    ))}
-                  </div>
-                )}
-              </button>
-            );
-          };
-
-          return (
-            <div
-              ref={dropdownRef}
-              className="absolute top-full left-0 right-0 mt-1 max-h-80 overflow-y-auto rounded-lg border border-surface-border bg-surface-card z-20"
-            >
-              {pendingItems.length > 0 && (
-                <>
-                  <div className="px-3 py-1.5 text-[10px] font-mono uppercase tracking-wider text-gold bg-surface-bg/50 border-b border-surface-border">
-                    Pending
-                  </div>
-                  {pendingItems.map(renderItem)}
-                </>
-              )}
-              {acceptedItems.length > 0 && (
-                <>
-                  <div className="px-3 py-1.5 text-[10px] font-mono uppercase tracking-wider text-text-dim bg-surface-bg/50 border-b border-surface-border">
-                    Accepted
-                  </div>
-                  {acceptedItems.map(renderItem)}
-                </>
-              )}
-            </div>
-          );
-        })()}
+        {showDropdown && filtered.length > 0 && (
+          <DropdownList
+            pending={pendingItems}
+            accepted={acceptedItems}
+            highlightIdx={highlightIdx}
+            dropdownRef={dropdownRef}
+            onSelect={selectPack}
+          />
+        )}
 
         <p className="text-xs text-text-dim mt-2 text-center">
           Enter a GitHub repo path, paste a URL, or browse packs with &#9660;
@@ -447,66 +640,14 @@ export function PreviewClient() {
         </div>
       )}
 
-      {/* Pack header */}
+      {/* Pack content */}
       {manifest && (
         <>
-          <div className="text-center mb-8">
-            <h2 className="font-display text-2xl text-text-primary mb-1">
-              {manifest.display_name || manifest.name}
-            </h2>
-            <div className="flex flex-wrap items-center justify-center gap-x-3 gap-y-1 text-xs text-text-muted">
-              {manifest.version && (
-                <span className="font-mono">v{manifest.version}</span>
-              )}
-              {manifest.author?.name && (
-                <span>
-                  by{" "}
-                  <a
-                    href={`https://github.com/${manifest.author.github || manifest.author.name}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="hover:text-gold transition-colors"
-                  >
-                    {manifest.author.name}
-                  </a>
-                </span>
-              )}
-              {manifest.language && (
-                <span className="rounded-full bg-surface-border px-2 py-0.5 text-[10px] font-mono text-text-muted uppercase">
-                  {manifest.language}
-                </span>
-              )}
-              <span>
-                {Object.values(categories).reduce(
-                  (sum, cat) => sum + (cat.sounds?.length || 0),
-                  0
-                )}{" "}
-                sounds
-              </span>
-              {(() => {
-                const formats = new Set<string>();
-                for (const cat of Object.values(categories)) {
-                  for (const s of cat.sounds || []) {
-                    const ext = s.file.split(".").pop()?.toLowerCase();
-                    if (ext) formats.add(ext);
-                  }
-                }
-                return formats.size > 0 ? (
-                  <span className="rounded-full bg-surface-border px-2 py-0.5 text-[10px] font-mono text-text-muted uppercase">
-                    {[...formats].join(" / ")}
-                  </span>
-                ) : null;
-              })()}
-              <a
-                href={`https://github.com/${resolvedRepo}`}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="font-mono hover:text-gold transition-colors"
-              >
-                {resolvedRepo}
-              </a>
-            </div>
-          </div>
+          <PackHeader
+            manifest={manifest}
+            categories={categories}
+            resolvedRepo={resolvedRepo}
+          />
 
           {/* Play All button */}
           <div className="text-center mb-8">
@@ -524,60 +665,15 @@ export function PreviewClient() {
 
           {/* Category grid */}
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            {allCategoryKeys.map((catKey) => {
-              const catInfo = CESP_CATEGORIES[catKey];
-              const catData = categories[catKey];
-              const sounds = catData?.sounds || [];
-
-              return (
-                <div
-                  key={catKey}
-                  className={`rounded-lg border bg-surface-card p-4 transition-all duration-300 ${
-                    touringCategory === catKey
-                      ? "border-gold shadow-[0_0_12px_rgba(255,171,1,0.3)]"
-                      : sounds.length > 0
-                        ? "border-surface-border"
-                        : "border-surface-border/50 opacity-50"
-                  }`}
-                >
-                  <div className="font-mono text-xs font-semibold text-gold mb-0.5">
-                    {catKey}
-                  </div>
-                  <div className="text-xs text-text-dim mb-1">
-                    {catInfo.description}
-                  </div>
-                  <div
-                    className={`text-[10px] uppercase tracking-wider mb-3 ${
-                      catInfo.tier === "core"
-                        ? "text-gold"
-                        : "text-text-dim"
-                    }`}
-                  >
-                    {catInfo.tier === "core" ? "core" : "extended"}
-                  </div>
-
-                  {sounds.length === 0 ? (
-                    <p className="text-xs text-text-dim italic">No sounds</p>
-                  ) : (
-                    <div className="flex flex-col gap-1.5">
-                      {sounds.map((sound, idx) => (
-                        <AudioPlayer
-                          key={`${catKey}-${idx}`}
-                          url={`${audioBase}/${sound.file}`}
-                          label={
-                            sound.label ||
-                            sound.file.split("/").pop() ||
-                            sound.file
-                          }
-                          id={`preview-${catKey}-${idx}`}
-                          compact
-                        />
-                      ))}
-                    </div>
-                  )}
-                </div>
-              );
-            })}
+            {ALL_CATEGORY_KEYS.map((catKey) => (
+              <CategoryCard
+                key={catKey}
+                catKey={catKey}
+                catData={categories[catKey]}
+                audioBase={audioBase}
+                touringCategory={touringCategory}
+              />
+            ))}
           </div>
         </>
       )}
