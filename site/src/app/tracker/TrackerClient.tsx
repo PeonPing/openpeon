@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
-import { AudioPlayer } from "@/components/ui/AudioPlayer";
 
 // ── Types ────────────────────────────────────────────────────────────────────
 
@@ -13,24 +12,6 @@ interface PullRequest {
   user: { login: string; avatar_url: string };
   _source_repo?: string;
   _source_path?: string;
-}
-
-interface ManifestSound {
-  file: string;
-  label?: string;
-}
-
-interface ManifestCategory {
-  sounds: ManifestSound[];
-}
-
-interface PackManifest {
-  name: string;
-  display_name?: string;
-  version?: string;
-  author?: { name: string; github?: string };
-  language?: string;
-  categories: Record<string, ManifestCategory>;
 }
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
@@ -48,29 +29,6 @@ function timeAgo(date: Date): string {
   return date.toLocaleDateString();
 }
 
-async function fetchManifest(
-  sourceRepo: string,
-  sourcePath?: string
-): Promise<{ manifest: PackManifest; branch: string } | null> {
-  const manifestPath = sourcePath
-    ? `${sourcePath}/openpeon.json`
-    : "openpeon.json";
-  for (const ref of ["main", "master"]) {
-    try {
-      const res = await fetch(
-        `https://raw.githubusercontent.com/${sourceRepo}/${ref}/${manifestPath}`
-      );
-      if (res.ok) {
-        const manifest = await res.json();
-        return { manifest, branch: ref };
-      }
-    } catch {
-      // Try next branch
-    }
-  }
-  return null;
-}
-
 // ── Component ────────────────────────────────────────────────────────────────
 
 export function TrackerClient() {
@@ -78,8 +36,6 @@ export function TrackerClient() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
-  const [expandedPR, setExpandedPR] = useState<number | null>(null);
-
   const fetchPRs = useCallback(async () => {
     setLoading(true);
     setError(null);
@@ -187,14 +143,7 @@ export function TrackerClient() {
           </p>
           <div className="flex flex-col gap-3">
             {prs.map((pr) => (
-              <PRCard
-                key={pr.number}
-                pr={pr}
-                expanded={expandedPR === pr.number}
-                onToggle={() =>
-                  setExpandedPR(expandedPR === pr.number ? null : pr.number)
-                }
-              />
+              <PRCard key={pr.number} pr={pr} />
             ))}
           </div>
         </>
@@ -205,21 +154,11 @@ export function TrackerClient() {
 
 // ── Sub-components ───────────────────────────────────────────────────────────
 
-function PRCard({
-  pr,
-  expanded,
-  onToggle,
-}: {
-  pr: PullRequest;
-  expanded: boolean;
-  onToggle: () => void;
-}) {
+function PRCard({ pr }: { pr: PullRequest }) {
   const ago = timeAgo(new Date(pr.created_at));
-  const hasPreview = !!pr._source_repo;
 
   return (
     <div className="rounded-lg border border-surface-border bg-surface-card transition-all duration-200 hover:border-gold/50">
-      {/* PR header row */}
       <div className="flex items-center gap-3 p-4">
         {/* PR icon */}
         <div className="flex-shrink-0 w-8 h-8 rounded-full bg-success/10 flex items-center justify-center">
@@ -259,149 +198,6 @@ function PRCard({
         <span className="flex-shrink-0 text-xs font-medium text-success bg-success/10 border border-success/20 rounded-full px-2.5 py-0.5">
           Open
         </span>
-
-        {/* Preview toggle */}
-        {hasPreview && (
-          <button
-            onClick={onToggle}
-            className={`flex-shrink-0 rounded-lg border px-3 py-1.5 text-xs font-medium transition-all duration-200 ${
-              expanded
-                ? "border-gold/50 bg-gold-glow text-gold"
-                : "border-surface-border text-text-muted hover:border-gold/50 hover:text-gold"
-            }`}
-          >
-            {expanded ? "Hide preview" : "Preview sounds"}
-          </button>
-        )}
-      </div>
-
-      {/* Expandable preview panel */}
-      {expanded && hasPreview && (
-        <PackPreview
-          sourceRepo={pr._source_repo!}
-          sourcePath={pr._source_path}
-          prNumber={pr.number}
-        />
-      )}
-    </div>
-  );
-}
-
-function PackPreview({
-  sourceRepo,
-  sourcePath,
-  prNumber,
-}: {
-  sourceRepo: string;
-  sourcePath?: string;
-  prNumber: number;
-}) {
-  const [manifest, setManifest] = useState<PackManifest | null>(null);
-  const [branch, setBranch] = useState<string>("main");
-  const [loadingManifest, setLoadingManifest] = useState(true);
-  const [manifestError, setManifestError] = useState<string | null>(null);
-
-  useEffect(() => {
-    let cancelled = false;
-    setLoadingManifest(true);
-    setManifestError(null);
-
-    fetchManifest(sourceRepo, sourcePath).then((result) => {
-      if (cancelled) return;
-      if (result) {
-        setManifest(result.manifest);
-        setBranch(result.branch);
-      } else {
-        setManifestError("Could not load openpeon.json from this repo.");
-      }
-      setLoadingManifest(false);
-    });
-
-    return () => {
-      cancelled = true;
-    };
-  }, [sourceRepo, sourcePath]);
-
-  if (loadingManifest) {
-    return (
-      <div className="border-t border-surface-border px-4 py-6 text-center">
-        <p className="text-xs text-text-dim">Loading pack manifest...</p>
-      </div>
-    );
-  }
-
-  if (manifestError || !manifest) {
-    return (
-      <div className="border-t border-surface-border px-4 py-6 text-center">
-        <p className="text-xs text-text-dim">
-          {manifestError || "No manifest found."}
-        </p>
-      </div>
-    );
-  }
-
-  const audioBase = `https://raw.githubusercontent.com/${sourceRepo}/${branch}${sourcePath ? "/" + sourcePath : ""}`;
-  const categories = manifest.categories || {};
-  const categoryEntries = Object.entries(categories).filter(
-    ([, cat]) => cat.sounds?.length > 0
-  );
-  const totalSounds = categoryEntries.reduce(
-    (sum, [, cat]) => sum + cat.sounds.length,
-    0
-  );
-
-  return (
-    <div className="border-t border-surface-border">
-      {/* Pack meta bar */}
-      <div className="flex flex-wrap items-center gap-x-3 gap-y-1 px-4 py-3 bg-surface-bg/50">
-        <span className="font-display text-sm text-text-primary">
-          {manifest.display_name || manifest.name}
-        </span>
-        {manifest.version && (
-          <span className="font-mono text-[11px] text-text-dim">
-            v{manifest.version}
-          </span>
-        )}
-        {manifest.author?.name && (
-          <span className="text-xs text-text-muted">
-            by {manifest.author.name}
-          </span>
-        )}
-        {manifest.language && (
-          <span className="rounded-full bg-surface-border px-2 py-0.5 text-[10px] font-mono text-text-muted uppercase">
-            {manifest.language}
-          </span>
-        )}
-        <span className="text-xs text-text-dim">
-          {totalSounds} sound{totalSounds !== 1 ? "s" : ""} in{" "}
-          {categoryEntries.length} categor
-          {categoryEntries.length !== 1 ? "ies" : "y"}
-        </span>
-      </div>
-
-      {/* Sound categories */}
-      <div className="px-4 pb-4 pt-2 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-        {categoryEntries.map(([catName, catData]) => (
-          <div
-            key={catName}
-            className="rounded-lg border border-surface-border bg-surface-bg/30 p-3"
-          >
-            <div className="font-mono text-xs font-semibold text-gold mb-2">
-              {catName}
-            </div>
-            <div className="flex flex-col gap-1.5">
-              {catData.sounds.map((sound, idx) => (
-                <AudioPlayer
-                  key={`${catName}-${idx}`}
-                  url={`${audioBase}/${sound.file}`}
-                  label={sound.label || sound.file.split("/").pop() || sound.file}
-                  id={`tracker-${prNumber}-${catName}-${idx}`}
-                  compact
-                />
-              ))}
-            </div>
-          </div>
-        ))}
       </div>
     </div>
   );
