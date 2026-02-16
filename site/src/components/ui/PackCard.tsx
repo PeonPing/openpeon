@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import type { PackMeta } from "@/lib/types";
 import { AudioPlayer } from "./AudioPlayer";
 
@@ -22,6 +23,7 @@ function TierBadge({ tier }: { tier: string }) {
 }
 
 export function PackCard({ pack }: { pack: PackMeta }) {
+  const router = useRouter();
   const preview = pack.previewSounds[0];
 
   return (
@@ -82,6 +84,25 @@ export function PackCard({ pack }: { pack: PackMeta }) {
             compact
           />
         </div>
+      )}
+
+      {pack.sourceRepo && (
+        <button
+          type="button"
+          onClick={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            const hash = encodeURIComponent(
+              pack.sourcePath
+                ? pack.sourceRepo + "/" + pack.sourcePath
+                : pack.sourceRepo!
+            );
+            router.push(`/preview#${hash}`);
+          }}
+          className="block mt-2 text-left text-[11px] font-medium text-gold hover:text-gold/80 transition-colors"
+        >
+          preview &rarr;
+        </button>
       )}
     </Link>
   );

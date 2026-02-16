@@ -121,6 +121,8 @@ interface PackData {
   categoryNames: string[];
   totalSoundCount: number;
   previewSounds: { file: string; label: string; audioUrl: string }[];
+  sourceRepo?: string;
+  sourcePath?: string;
 }
 
 // ── Config ──────────────────────────────────────────────────────────────────
@@ -141,7 +143,7 @@ const REGISTRY_INDEX_URL =
 // ── Helpers ─────────────────────────────────────────────────────────────────
 // audioBase should be the URL of the directory containing sounds/
 // e.g. "https://raw.../og-packs/v1.0.0/peon" or "https://raw.../mypack/v1.0.0"
-function processManifest(manifest: Manifest, packName: string, audioBase: string, trustTier: string = "community", registryTags?: string[]): PackData {
+function processManifest(manifest: Manifest, packName: string, audioBase: string, trustTier: string = "community", registryTags?: string[], sourceRepo?: string, sourcePath?: string): PackData {
   const categories: PackData["categories"] = [];
   const previewSounds: PackData["previewSounds"] = [];
   let soundCount = 0;
@@ -182,6 +184,8 @@ function processManifest(manifest: Manifest, packName: string, audioBase: string
     categoryNames: categories.map((c) => c.name),
     totalSoundCount: soundCount,
     previewSounds,
+    sourceRepo,
+    sourcePath,
   };
 }
 
@@ -262,7 +266,7 @@ async function generateFromRemote(): Promise<PackData[]> {
           ? `${rawBase}/${entry.source_path}`
           : rawBase;
 
-        return processManifest(manifest, packName, audioBase, entry.trust_tier || "community", entry.tags);
+        return processManifest(manifest, packName, audioBase, entry.trust_tier || "community", entry.tags, entry.source_repo, entry.source_path || undefined);
       })
     );
 
