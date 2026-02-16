@@ -14,6 +14,16 @@ interface PullRequest {
   _source_path?: string;
 }
 
+interface CachedData {
+  prs: PullRequest[];
+  timestamp: number;
+}
+
+// ── Constants ────────────────────────────────────────────────────────────────
+
+const CACHE_KEY = "openpeon-tracker-cache";
+const CACHE_TTL_MS = 5 * 60 * 1000; // 5 minutes
+
 // ── Helpers ──────────────────────────────────────────────────────────────────
 
 function timeAgo(date: Date): string {
@@ -29,6 +39,29 @@ function timeAgo(date: Date): string {
   return date.toLocaleDateString();
 }
 
+function readCache(): CachedData | null {
+  try {
+    const raw = localStorage.getItem(CACHE_KEY);
+    if (!raw) return null;
+    const cached: CachedData = JSON.parse(raw);
+    if (Date.now() - cached.timestamp > CACHE_TTL_MS) return null;
+    return cached;
+  } catch {
+    return null;
+  }
+}
+
+function writeCache(prs: PullRequest[]) {
+  try {
+    localStorage.setItem(
+      CACHE_KEY,
+      JSON.stringify({ prs, timestamp: Date.now() })
+    );
+  } catch {
+    // Storage full or unavailable — non-critical
+  }
+}
+
 // ── Component ────────────────────────────────────────────────────────────────
 
 export function TrackerClient() {
@@ -36,7 +69,19 @@ export function TrackerClient() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
-  const fetchPRs = useCallback(async () => {
+
+  const fetchPRs = useCallback(async (skipCache = false) => {
+    // Try cache first
+    if (!skipCache) {
+      const cached = readCache();
+      if (cached) {
+        setPrs(cached.prs);
+        setLastUpdated(new Date(cached.timestamp));
+        setLoading(false);
+        return;
+      }
+    }
+
     setLoading(true);
     setError(null);
     try {
@@ -53,36 +98,35 @@ export function TrackerClient() {
       }
       const data: PullRequest[] = await res.json();
 
-      // Enrich PRs with source_repo from diff (for preview links)
-      await Promise.all(
-        data.map(async (pr) => {
-          try {
-            const filesRes = await fetch(
-              `https://api.github.com/repos/PeonPing/registry/pulls/${pr.number}/files`
-            );
-            if (!filesRes.ok) return;
-            const files: { filename: string; patch?: string }[] =
-              await filesRes.json();
-            const indexFile = files.find((f) => f.filename === "index.json");
-            if (!indexFile?.patch) return;
-            const repoMatch = indexFile.patch.match(
-              /^\+.*"source_repo"\s*:\s*"([^"]+)"/m
-            );
-            const pathMatch = indexFile.patch.match(
-              /^\+.*"source_path"\s*:\s*"([^"]+)"/m
-            );
-            if (repoMatch) {
-              pr._source_repo = repoMatch[1];
-              pr._source_path = pathMatch ? pathMatch[1] : undefined;
-            }
-          } catch {
-            // Ignore enrichment failures
+      // Enrich PRs with source_repo from diff — sequential to avoid rate limits
+      for (const pr of data) {
+        try {
+          const filesRes = await fetch(
+            `https://api.github.com/repos/PeonPing/registry/pulls/${pr.number}/files`
+          );
+          if (!filesRes.ok) continue;
+          const files: { filename: string; patch?: string }[] =
+            await filesRes.json();
+          const indexFile = files.find((f) => f.filename === "index.json");
+          if (!indexFile?.patch) continue;
+          const repoMatch = indexFile.patch.match(
+            /^\+.*"source_repo"\s*:\s*"([^"]+)"/m
+          );
+          const pathMatch = indexFile.patch.match(
+            /^\+.*"source_path"\s*:\s*"([^"]+)"/m
+          );
+          if (repoMatch) {
+            pr._source_repo = repoMatch[1];
+            pr._source_path = pathMatch ? pathMatch[1] : undefined;
           }
-        })
-      );
+        } catch (err) {
+          console.warn(`Failed to enrich PR #${pr.number}:`, err);
+        }
+      }
 
       setPrs(data);
       setLastUpdated(new Date());
+      writeCache(data);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to fetch PRs");
       setPrs([]);
@@ -103,7 +147,7 @@ export function TrackerClient() {
           Registry Tracker
         </h1>
         <button
-          onClick={fetchPRs}
+          onClick={() => fetchPRs(true)}
           disabled={loading}
           className="flex-shrink-0 rounded-lg border border-surface-border bg-surface-card px-4 py-2 text-sm text-text-muted hover:border-gold/50 hover:text-gold transition-colors disabled:opacity-50 disabled:cursor-wait"
         >
