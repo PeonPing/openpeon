@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import { CESP_CATEGORIES } from "@/lib/categories";
 import { CodeBlock } from "@/components/ui/CodeBlock";
 
