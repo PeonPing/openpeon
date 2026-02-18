@@ -131,13 +131,16 @@ The `categories` object maps CESP category names to sound lists:
 }
 ```
 
-Each category value is an object with a `sounds` array. Each sound entry:
+Each category value is an object with a `sounds` array and an optional `icon` field. Each sound entry:
 
 | Field | Type | Required | Description |
 |---|---|---|---|
 | `file` | string | Yes | Path to the audio file, relative to the manifest. MUST use forward slashes. |
 | `label` | string | Yes | Human-readable description of the sound. Used for accessibility and display. |
 | `sha256` | string | No* | SHA-256 hex digest of the audio file. *REQUIRED for registry submission. |
+| `icon` | string | No | Path to an icon image for this sound, relative to manifest. See Section 5. |
+
+Each category MAY also include an `icon` field for a category-level icon (see Section 5).
 
 A category MAY have an empty sounds array. A pack is valid with any subset of categories populated.
 
@@ -145,7 +148,8 @@ A category MAY have an empty sounds array. A pack is valid with any subset of ca
 
 | Field | Type | Description |
 |---|---|---|
-| `category_aliases` | object | Maps legacy category names to CESP category names. See Section 5. |
+| `icon` | string | Path to pack-level icon image, relative to manifest. See Section 5. |
+| `category_aliases` | object | Maps legacy category names to CESP category names. See Section 6. |
 | `preview` | string | Path to a preview audio file (relative to manifest). Max 10 seconds, used for browsing. |
 | `min_player_version` | string | Minimum CESP player version required. Semver string. |
 | `tags` | array | Array of strings for discoverability (e.g., `["gaming", "warcraft", "comedy"]`). Max 10 tags. |
@@ -167,10 +171,12 @@ A category MAY have an empty sounds array. A pack is valid with any subset of ca
   "language": "en",
   "homepage": "https://github.com/DoubleGremlin181/openpeon-glados",
   "tags": ["gaming", "portal", "valve", "comedy"],
+  "icon": "icons/glados.png",
   "categories": {
     "session.start": {
+      "icon": "icons/session-start.png",
       "sounds": [
-        { "file": "sounds/Hello.mp3", "label": "Hello", "sha256": "3f7a..." },
+        { "file": "sounds/Hello.mp3", "label": "Hello", "icon": "icons/hello.png", "sha256": "3f7a..." },
         { "file": "sounds/IKnowYoureThere.mp3", "label": "I know you're there.", "sha256": "df37..." },
         { "file": "sounds/HelloImbecile.mp3", "label": "Hello, imbecile!", "sha256": "dd10..." }
       ]
@@ -205,10 +211,15 @@ my-pack/
     Hello.mp3
     GoodNews.mp3
     ...
+  icons/                 # Optional: icon files
+    pack.png
+    session-start.png
   README.md              # Optional: pack description
   LICENSE                # Optional: license file
   preview.mp3            # Optional: browsing preview
 ```
+
+Icons MAY be placed anywhere in the pack directory (including `icon.png` at root), but an `icons/` directory is RECOMMENDED for organization.
 
 ### 3.1 Constraints
 
@@ -248,7 +259,55 @@ Audio files MUST be valid audio (verifiable via magic bytes / file headers):
 
 Files that do not match their expected format MUST be rejected by players and registries.
 
-## 5. Category Aliases (Backward Compatibility)
+## 5. Icon File Constraints
+
+### 5.1 Supported Formats
+
+Players MUST support PNG. Players SHOULD support JPEG and WebP. Players MAY support SVG.
+
+| Format | Extension | MIME Type | Notes |
+|---|---|---|---|
+| PNG | `.png` | `image/png` | RECOMMENDED, supports transparency |
+| JPEG | `.jpg`, `.jpeg` | `image/jpeg` | For photographic icons |
+| WebP | `.webp` | `image/webp` | Modern format, good compression |
+| SVG | `.svg` | `image/svg+xml` | Scalable vector, OPTIONAL player support |
+
+### 5.2 Size Limits
+
+- Individual icon files MUST NOT exceed **500 KB**.
+- Total pack size (50 MB) includes icons.
+- Recommended dimensions: **256x256 px** (min 64x64, max 1024x1024).
+
+### 5.3 File Naming
+
+Icon file names follow the same rules as audio files: MUST match the pattern `[a-zA-Z0-9._-]+` (alphanumeric, dots, underscores, hyphens only).
+
+### 5.4 Security
+
+Icon files MUST be valid images, verifiable via magic bytes / file headers:
+
+| Format | Magic Bytes | Offset |
+|---|---|---|
+| PNG | `89 50 4E 47` | 0 |
+| JPEG | `FF D8 FF` | 0 |
+| WebP | `52 49 46 46` (`RIFF`) + `57 45 42 50` (`WEBP`) | 0, 8 |
+| SVG | Valid XML with `<svg` element | — |
+
+Files that do not match their expected format MUST be rejected by players and registries.
+
+### 5.5 Icon Resolution Chain
+
+When displaying an icon for a notification, players SHOULD resolve in order:
+
+1. Sound-level `icon` field
+2. Category-level `icon` field
+3. Pack-level `icon` field
+4. `icon.png` at pack root (backward compatibility)
+5. Player default icon
+
+Players MAY implement partial support (e.g., pack-level only).
+
+## 6. Category Aliases (Backward Compatibility)
 
 The `category_aliases` field allows packs to declare mappings from legacy category names to CESP names. This enables packs to work with older players that use non-standard category names.
 
@@ -269,18 +328,18 @@ The `category_aliases` field allows packs to declare mappings from legacy catego
 
 This allows gradual migration from tool-specific naming to the CESP standard.
 
-## 6. IDE Mapping Contract
+## 7. IDE Mapping Contract
 
 CESP does NOT prescribe how IDEs map their internal events to categories. Each IDE publishes its own event mapping table.
 
-### 6.1 Requirements for Players
+### 7.1 Requirements for Players
 
 - Players MUST map at least one internal event to a CESP core category.
 - Players SHOULD publish their event mapping as documentation.
 - Players SHOULD allow users to customize event-to-category mappings.
 - Players MUST handle missing categories gracefully (no sound, no error).
 
-### 6.2 Reference Mappings
+### 7.2 Reference Mappings
 
 **Claude Code (via peon-ping):**
 
@@ -315,16 +374,16 @@ CESP does NOT prescribe how IDEs map their internal events to categories. Each I
 | Task error | `task.error` |
 | Rate limit | `resource.limit` |
 
-### 6.3 Mapping Guidelines
+### 7.3 Mapping Guidelines
 
 - Multiple internal events MAY map to the same CESP category.
 - An internal event SHOULD map to at most one CESP category.
 - Players SHOULD debounce rapid events to avoid sound spam.
 - Players SHOULD provide volume control and per-category muting.
 
-## 7. Player Behavior
+## 8. Player Behavior
 
-### 7.1 Sound Selection
+### 8.1 Sound Selection
 
 When a CESP category is triggered:
 1. Look up the category in the active pack's manifest.
@@ -332,14 +391,14 @@ When a CESP category is triggered:
 3. Players SHOULD avoid repeating the same sound consecutively.
 4. Play the selected sound at the configured volume.
 
-### 7.2 Pack Management
+### 8.2 Pack Management
 
 - Players SHOULD support installing multiple packs.
 - Players SHOULD allow users to set an active pack.
 - Players MAY support pack rotation (random or round-robin per session).
 - Players SHOULD store packs in `~/.openpeon/packs/` (global) or `.openpeon/packs/` (project-local).
 
-### 7.3 Configuration
+### 8.3 Configuration
 
 Players SHOULD support at minimum:
 - Volume control (0.0 - 1.0)
@@ -347,9 +406,9 @@ Players SHOULD support at minimum:
 - Active pack selection
 - Global enable/disable (pause/resume)
 
-## 8. Versioning
+## 9. Versioning
 
-### 8.1 Spec Versioning
+### 9.1 Spec Versioning
 
 The CESP spec uses major.minor versioning:
 - **Major** version changes indicate breaking changes to the manifest format.
@@ -357,14 +416,14 @@ The CESP spec uses major.minor versioning:
 
 Packs declare which spec version they target via `cesp_version`. Players MUST support all packs with the same major version.
 
-### 8.2 Pack Versioning
+### 9.2 Pack Versioning
 
 Packs use [Semantic Versioning 2.0](https://semver.org/):
 - **Major**: Breaking changes (removed categories, renamed files)
 - **Minor**: New sounds or categories added
 - **Patch**: Bug fixes (replaced corrupted audio, fixed metadata)
 
-## 9. Registry Integration
+## 10. Registry Integration
 
 Packs MAY be distributed via the OpenPeon registry. Registry-submitted packs have additional requirements:
 

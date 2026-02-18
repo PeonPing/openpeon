@@ -74,6 +74,11 @@
       "uniqueItems": true,
       "description": "Tags for discoverability"
     },
+    "icon": {
+      "type": "string",
+      "pattern": "^[a-zA-Z0-9._/-]+$",
+      "description": "Path to pack-level icon, relative to manifest"
+    },
     "preview": {
       "type": "string",
       "description": "Path to preview audio file, relative to manifest"
@@ -132,6 +137,11 @@
           "items": {
             "$ref": "#/definitions/sound"
           }
+        },
+        "icon": {
+          "type": "string",
+          "pattern": "^[a-zA-Z0-9._/-]+$",
+          "description": "Path to category-level icon, relative to manifest"
         }
       },
       "additionalProperties": false
@@ -154,6 +164,11 @@
           "type": "string",
           "pattern": "^[a-f0-9]{64}$",
           "description": "SHA-256 hex digest of the audio file"
+        },
+        "icon": {
+          "type": "string",
+          "pattern": "^[a-zA-Z0-9._/-]+$",
+          "description": "Path to sound-level icon, relative to manifest"
         }
       },
       "additionalProperties": false
