@@ -16,6 +16,9 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { url: "https://openpeon.com/packs", lastModified: new Date() },
     { url: "https://openpeon.com/spec", lastModified: new Date() },
     { url: "https://openpeon.com/create", lastModified: new Date() },
+    { url: "https://openpeon.com/tracker", lastModified: new Date() },
+    { url: "https://openpeon.com/requests", lastModified: new Date() },
+    { url: "https://openpeon.com/preview", lastModified: new Date() },
     ...packPages,
   ];
 }
