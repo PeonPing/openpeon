@@ -289,6 +289,9 @@ CESP does NOT prescribe how IDEs map their internal events to categories. Each I
 | `SessionStart` | `session.start` |
 | `Stop` | `task.complete` |
 | `UserPromptSubmit` (rapid) | `user.spam` |
+| `UserPromptSubmit` (non-rapid) | `task.acknowledge` |
+| `PostToolUseFailure` | `task.error` |
+| `PreCompact` | `resource.limit` |
 | `Notification` (permission) | `input.required` |
 | `PermissionRequest` | `input.required` |
 

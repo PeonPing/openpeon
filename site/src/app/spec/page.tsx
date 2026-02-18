@@ -344,6 +344,9 @@ export default function SpecPage() {
                   {[
                     ["Claude Code: SessionStart", "session.start"],
                     ["Claude Code: Stop", "task.complete"],
+                    ["Claude Code: UserPromptSubmit (non-rapid)", "task.acknowledge"],
+                    ["Claude Code: PostToolUseFailure", "task.error"],
+                    ["Claude Code: PreCompact", "resource.limit"],
                     ["Claude Code: Notification (permission)", "input.required"],
                     ["Codex: agent-turn-complete", "task.complete"],
                     ["Cursor: stop", "task.complete"],
