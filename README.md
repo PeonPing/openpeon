@@ -124,7 +124,7 @@ All 40 official packs live in [PeonPing/og-packs](https://github.com/PeonPing/og
 
 ## Registry
 
-The OpenPeon registry is **live** at [PeonPing/registry](https://github.com/PeonPing/registry). The registry index is published to [peonping.github.io/registry/index.json](https://peonping.github.io/registry/index.json) and currently lists 63 packs (40 official + 23 community).
+The OpenPeon registry is **live** at [PeonPing/registry](https://github.com/PeonPing/registry). The registry index is published to [peonping.github.io/registry/index.json](https://peonping.github.io/registry/index.json) and currently lists 75+ packs.
 
 Packs are hosted in their own repos. The 40 official packs are in [PeonPing/og-packs](https://github.com/PeonPing/og-packs). Community packs live in contributor repos. See [Registry Design](docs/registry-design.md) for the architecture details.
 
@@ -132,7 +132,7 @@ Packs are hosted in their own repos. The 40 official packs are in [PeonPing/og-p
 
 | Tool | Status | Link |
 |---|---|---|
-| [peon-ping](https://github.com/PeonPing/peon-ping) (Claude Code, Codex, Cursor, OpenCode) | Reference implementation | 63+ packs |
+| [peon-ping](https://github.com/PeonPing/peon-ping) (Claude Code, Codex, Cursor, OpenCode, and more) | Reference implementation | 75+ packs |
 | *Your IDE here* | — | [Open a PR](https://github.com/PeonPing/openpeon/issues) |
 
 ## Website
