@@ -163,6 +163,19 @@ The OpenPeon registry at https://github.com/PeonPing/registry is how packs are d
 
 Full guide: https://openpeon.com/create
 
+## MCP Server Integration
+
+peon-ping v1.9.0+ includes an MCP (Model Context Protocol) server that allows any MCP-compatible AI agent to play CESP sounds via tool calls, without requiring hooks.
+
+### MCP Tools
+- `play_sound` — Play one or more sounds by pack/file key (e.g. `duke_nukem/SonOfABitch`)
+
+### MCP Resources
+- `peon-ping://catalog` — Full pack catalog; clients prefetch once, no repeated tool calls
+- `peon-ping://pack/{name}` — Individual pack details and available sound keys
+
+This enables agent-driven sound selection: the model picks the exact sound based on context, rather than hooks automatically playing sounds on every event.
+
 ## Implementing CESP in Your IDE
 
 1. Map your IDE events to CESP categories
