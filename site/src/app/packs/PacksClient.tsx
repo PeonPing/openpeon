@@ -9,6 +9,29 @@ import { ErrorBoundary } from "@/components/ui/ErrorBoundary";
 
 // ── Constants ────────────────────────────────────────────────────────────────
 
+const LANGUAGE_LABELS: Record<string, string> = {
+  en: "English",
+  es: "Spanish",
+  fr: "French",
+  de: "German",
+  ru: "Russian",
+  cs: "Czech",
+  pl: "Polish",
+  el: "Greek",
+  pt: "Portuguese",
+  zh: "Chinese",
+  ja: "Japanese",
+  ko: "Korean",
+  it: "Italian",
+  nl: "Dutch",
+  sv: "Swedish",
+  da: "Danish",
+  fi: "Finnish",
+  no: "Norwegian",
+  tr: "Turkish",
+  ar: "Arabic",
+};
+
 const PACKS_PER_PAGE = 24;
 
 type SortKey = "name-asc" | "name-desc" | "sounds-desc" | "sounds-asc";
@@ -244,7 +267,7 @@ export function PacksClient() {
             {allLangs.map(([lang, count]) => (
               <FilterPill
                 key={lang}
-                label={lang.toUpperCase()}
+                label={LANGUAGE_LABELS[lang] ?? lang.toUpperCase()}
                 count={count}
                 active={activeLang === lang}
                 onClick={() =>
