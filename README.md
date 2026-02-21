@@ -120,24 +120,24 @@ See the [full spec](spec/cesp-v1.md) for details on sound selection, volume cont
 - [Orc Peon (Warcraft III)](https://github.com/PeonPing/og-packs/tree/main/peon) — the original peon-ping pack
 - [GLaDOS (Portal)](https://github.com/PeonPing/og-packs/tree/main/glados) — passive-aggressive AI companion
 
-All 40 official packs live in [PeonPing/og-packs](https://github.com/PeonPing/og-packs).
+All official packs live in [PeonPing/og-packs](https://github.com/PeonPing/og-packs).
 
 ## Registry
 
-The OpenPeon registry is **live** at [PeonPing/registry](https://github.com/PeonPing/registry). The registry index is published to [peonping.github.io/registry/index.json](https://peonping.github.io/registry/index.json) and currently lists 75+ packs.
+The OpenPeon registry is **live** at [PeonPing/registry](https://github.com/PeonPing/registry). The registry index is published to [peonping.github.io/registry/index.json](https://peonping.github.io/registry/index.json) and currently lists 90+ packs.
 
-Packs are hosted in their own repos. The 40 official packs are in [PeonPing/og-packs](https://github.com/PeonPing/og-packs). Community packs live in contributor repos. See [Registry Design](docs/registry-design.md) for the architecture details.
+Packs are hosted in their own repos. Official packs are in [PeonPing/og-packs](https://github.com/PeonPing/og-packs). Community packs live in contributor repos. See [Registry Design](docs/registry-design.md) for the architecture details.
 
 ## Implementations
 
 | Tool | Status | Link |
 |---|---|---|
-| [peon-ping](https://github.com/PeonPing/peon-ping) (Claude Code, Codex, Cursor, OpenCode, and more) | Reference implementation | 75+ packs |
-| *Your IDE here* | — | [Open a PR](https://github.com/PeonPing/openpeon/issues) |
+| [peon-ping](https://github.com/PeonPing/peon-ping) (Claude Code, Codex, Cursor, Windsurf, Kiro, Copilot, Gemini CLI, OpenCode, Kilo Code, Antigravity) | Reference implementation | 90+ packs |
+| *Your CLI here* | — | [Integration guide](https://openpeon.com/integrate) |
 
 ## Website
 
-The [openpeon.com](https://openpeon.com) website lets you browse all registered packs with audio previews, filterable by tag, language, and trust tier (official/community). Source is in `site/`.
+The [openpeon.com](https://openpeon.com) website lets you browse all registered packs with audio previews, filterable by tag, language, and trust tier (official/community). It also includes an [integration guide](https://openpeon.com/integrate) for adding CESP support to any CLI. Source is in `site/`.
 
 ## Files
 
