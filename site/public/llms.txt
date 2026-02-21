@@ -2,7 +2,7 @@
 
 > An open standard for coding event sounds. Any IDE, any pack, one format.
 
-OpenPeon is the home of CESP (Coding Event Sound Pack Specification), an open standard that defines how sound packs respond to events in agentic IDEs like Claude Code, Cursor, and OpenAI Codex.
+OpenPeon is the home of CESP (Coding Event Sound Pack Specification), an open standard that defines how sound packs respond to events in agentic IDEs like Claude Code, Codex, Cursor, Windsurf, Kiro, Copilot, Gemini CLI, OpenCode, Kilo Code, and Google Antigravity.
 
 ## Links
 
@@ -10,6 +10,7 @@ OpenPeon is the home of CESP (Coding Event Sound Pack Specification), an open st
 - Spec: https://openpeon.com/spec
 - Packs: https://openpeon.com/packs
 - Create a Pack: https://openpeon.com/create
+- Integrate CESP into Your CLI: https://openpeon.com/integrate
 - GitHub: https://github.com/PeonPing/openpeon
 - Full Spec (markdown): https://github.com/PeonPing/openpeon/blob/main/spec/cesp-v1.md
 - JSON Schema: https://github.com/PeonPing/openpeon/blob/main/spec/openpeon.schema.json
@@ -176,11 +177,14 @@ peon-ping v1.9.0+ includes an MCP (Model Context Protocol) server that allows an
 
 This enables agent-driven sound selection: the model picks the exact sound based on context, rather than hooks automatically playing sounds on every event.
 
-## Implementing CESP in Your IDE
+## Implementing CESP in Your CLI or IDE
 
+The fastest way: visit https://openpeon.com/integrate, copy the agent-facing block, paste it into your AI coding agent with your CLI open. The agent reads your codebase and wires up CESP support.
+
+Or manually:
 1. Map your IDE events to CESP categories
 2. Load openpeon.json manifest from installed packs
 3. On each event, pick a random sound from the matching category
-4. Play the audio file, respecting volume and mute settings
+4. Play the audio file async, respecting volume and mute settings
 
 Full spec: https://openpeon.com/spec

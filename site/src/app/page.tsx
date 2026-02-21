@@ -162,19 +162,34 @@ export default function HomePage() {
         <h2 className="font-display text-2xl text-text-primary mb-6">
           Get Started
         </h2>
-        <div className="grid md:grid-cols-2 gap-4">
+        <div className="grid md:grid-cols-3 gap-4">
           <div className="rounded-lg border border-surface-border bg-surface-card p-6">
             <h3 className="font-display text-lg text-text-primary mb-2">
               Use Sound Packs
             </h3>
             <p className="text-sm text-text-muted mb-4">
-              Install peon-ping to get sound feedback in Claude Code, Codex, and
-              Cursor.
+              Install peon-ping to get sound feedback in Claude Code, Codex,
+              Cursor, and 7 more tools.
             </p>
             <CodeBlock
               code="curl -fsSL https://raw.githubusercontent.com/PeonPing/peon-ping/main/install.sh | bash"
               language="bash"
             />
+          </div>
+          <div className="rounded-lg border border-surface-border bg-surface-card p-6">
+            <h3 className="font-display text-lg text-text-primary mb-2">
+              Add to Your CLI
+            </h3>
+            <p className="text-sm text-text-muted mb-4">
+              Copy one block into your AI agent. It reads your codebase and
+              wires up CESP support.
+            </p>
+            <Link
+              href="/integrate"
+              className="inline-flex rounded-lg border border-gold/30 px-4 py-2 text-sm text-gold hover:bg-gold/10 transition-colors"
+            >
+              Integration guide &rarr;
+            </Link>
           </div>
           <div className="rounded-lg border border-surface-border bg-surface-card p-6">
             <h3 className="font-display text-lg text-text-primary mb-2">
@@ -207,7 +222,7 @@ export default function HomePage() {
                   Player
                 </th>
                 <th className="text-left px-4 py-3 text-text-muted font-medium">
-                  IDEs
+                  IDEs / Tools
                 </th>
                 <th className="text-left px-4 py-3 text-text-muted font-medium">
                   Status
@@ -227,7 +242,7 @@ export default function HomePage() {
                   </a>
                 </td>
                 <td className="px-4 py-3 text-text-body">
-                  Claude Code, Codex, Cursor
+                  Claude Code, Codex, Cursor, Windsurf, Kiro, Copilot, Gemini CLI, OpenCode, Kilo Code, Google Antigravity
                 </td>
                 <td className="px-4 py-3">
                   <span className="text-xs rounded-full bg-success/10 text-success px-2 py-0.5">
@@ -236,14 +251,14 @@ export default function HomePage() {
                 </td>
               </tr>
               <tr>
-                <td className="px-4 py-3 text-text-dim italic">Your player</td>
-                <td className="px-4 py-3 text-text-dim italic">Any IDE</td>
+                <td className="px-4 py-3 text-text-dim italic">Your CLI</td>
+                <td className="px-4 py-3 text-text-dim italic">Any tool</td>
                 <td className="px-4 py-3">
                   <Link
-                    href="/spec"
+                    href="/integrate"
                     className="text-xs text-text-muted hover:text-gold transition-colors"
                   >
-                    Read the spec &rarr;
+                    Add CESP support &rarr;
                   </Link>
                 </td>
               </tr>
