@@ -8,7 +8,7 @@ Any agentic IDE or terminal editor can implement the Coding Event Sound Pack Spe
 
 Agentic coding tools (Claude Code, Cursor, Windsurf, Copilot) run tasks in the background. You tab away, lose focus, and waste time waiting for something that finished 5 minutes ago. Sound notifications fix this — but every tool reinvents the wheel with its own format.
 
-CESP standardizes the format so sound packs work everywhere. The concept — born in [PeonPing](https://github.com/PeonPing/peon-ping) — inspired Microsoft to add native sound hooks to VS Code.
+CESP standardizes the format so sound packs work everywhere. The concept — born in [PeonPing](https://github.com/PeonPing/peon-ping) — [inspired Microsoft to add native sound hooks to VS Code](https://x.com/pierceboggan/status/2022114493141254300) for 50M+ users.
 
 ## The Spec
 
