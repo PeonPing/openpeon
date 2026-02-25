@@ -8,7 +8,7 @@ Any agentic IDE or terminal editor can implement the Coding Event Sound Pack Spe
 
 Agentic coding tools (Claude Code, Cursor, Windsurf, Copilot) run tasks in the background. You tab away, lose focus, and waste time waiting for something that finished 5 minutes ago. Sound notifications fix this — but every tool reinvents the wheel with its own format.
 
-CESP standardizes the format so sound packs work everywhere.
+CESP standardizes the format so sound packs work everywhere. The concept — born in [PeonPing](https://github.com/PeonPing/peon-ping) — inspired Microsoft to add native sound hooks to VS Code.
 
 ## The Spec
 
@@ -74,23 +74,11 @@ print('Valid!')
 
 That's it. Your pack works with any CESP-compatible player.
 
-## Quick Start: Implement CESP in Your IDE
+## Integration
 
-1. Define your event mapping (which IDE events trigger which CESP categories):
+Want to add CESP sound pack support to your CLI or coding tool? Copy the contents of [INTEGRATE.md](./INTEGRATE.md) into your AI coding agent and let it handle the wiring.
 
-```
-Your IDE Event          -> CESP Category
-editor.open             -> session.start
-agent.complete          -> task.complete
-agent.error             -> task.error
-permission.prompt       -> input.required
-```
-
-2. Load a pack's `openpeon.json` manifest.
-
-3. When an event fires, look up the mapped category and play a random sound from that category.
-
-4. Handle missing categories gracefully (no sound, no error).
+You can also find it rendered at [openpeon.com/integrate](https://openpeon.com/integrate).
 
 See the [full spec](spec/cesp-v1.md) for details on sound selection, volume control, and pack management.
 
@@ -124,7 +112,7 @@ All official packs live in [PeonPing/og-packs](https://github.com/PeonPing/og-pa
 
 ## Registry
 
-The OpenPeon registry is **live** at [PeonPing/registry](https://github.com/PeonPing/registry). The registry index is published to [peonping.github.io/registry/index.json](https://peonping.github.io/registry/index.json) and currently lists 90+ packs.
+The OpenPeon registry is **live** at [PeonPing/registry](https://github.com/PeonPing/registry). The registry index is published to [peonping.github.io/registry/index.json](https://peonping.github.io/registry/index.json) and currently lists 100+ packs.
 
 Packs are hosted in their own repos. Official packs are in [PeonPing/og-packs](https://github.com/PeonPing/og-packs). Community packs live in contributor repos. See [Registry Design](docs/registry-design.md) for the architecture details.
 
@@ -132,7 +120,7 @@ Packs are hosted in their own repos. Official packs are in [PeonPing/og-packs](h
 
 | Tool | Status | Link |
 |---|---|---|
-| [peon-ping](https://github.com/PeonPing/peon-ping) (Claude Code, Codex, Cursor, Windsurf, Kiro, Copilot, Gemini CLI, OpenCode, Kilo Code, Antigravity) | Reference implementation | 90+ packs |
+| [peon-ping](https://github.com/PeonPing/peon-ping) (Claude Code, Codex, Cursor, Windsurf, Kiro, Copilot, Gemini CLI, OpenCode, Kilo Code, Antigravity) | Reference implementation | 100+ packs |
 | *Your CLI here* | — | [Integration guide](https://openpeon.com/integrate) |
 
 ## Website
