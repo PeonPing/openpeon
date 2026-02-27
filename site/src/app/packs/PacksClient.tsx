@@ -34,13 +34,15 @@ const LANGUAGE_LABELS: Record<string, string> = {
 
 const PACKS_PER_PAGE = 24;
 
-type SortKey = "name-asc" | "name-desc" | "sounds-desc" | "sounds-asc";
+type SortKey = "name-asc" | "name-desc" | "sounds-desc" | "sounds-asc" | "date-desc" | "date-asc";
 
 const SORT_OPTIONS: { value: SortKey; label: string }[] = [
   { value: "name-asc", label: "A → Z" },
   { value: "name-desc", label: "Z → A" },
   { value: "sounds-desc", label: "Most sounds" },
   { value: "sounds-asc", label: "Fewest sounds" },
+  { value: "date-desc", label: "Newest" },
+  { value: "date-asc", label: "Oldest" },
 ];
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
@@ -56,6 +58,20 @@ function sortPacks(packs: ReturnType<typeof getAllPacks>, key: SortKey) {
       return sorted.sort((a, b) => b.totalSoundCount - a.totalSoundCount);
     case "sounds-asc":
       return sorted.sort((a, b) => a.totalSoundCount - b.totalSoundCount);
+    case "date-desc":
+      return sorted.sort((a, b) => {
+        if (!a.dateAdded && !b.dateAdded) return 0;
+        if (!a.dateAdded) return 1;
+        if (!b.dateAdded) return -1;
+        return b.dateAdded.localeCompare(a.dateAdded);
+      });
+    case "date-asc":
+      return sorted.sort((a, b) => {
+        if (!a.dateAdded && !b.dateAdded) return 0;
+        if (!a.dateAdded) return 1;
+        if (!b.dateAdded) return -1;
+        return a.dateAdded.localeCompare(b.dateAdded);
+      });
     default:
       return sorted;
   }
