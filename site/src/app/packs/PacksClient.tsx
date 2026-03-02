@@ -99,6 +99,7 @@ export function PacksClient() {
   const [page, setPage] = useState(
     Math.max(1, parseInt(searchParams.get("page") || "1", 10) || 1)
   );
+  const [tagsExpanded, setTagsExpanded] = useState(false);
 
   // Sync state → URL
   const updateUrl = useCallback(
@@ -182,6 +183,17 @@ export function PacksClient() {
     };
   }, [allPacks]);
 
+  // Visible tags (collapsed = only tags with count >= 3, plus active tag)
+  const TAG_MIN_COUNT = 3;
+  const visibleTags = useMemo(() => {
+    if (tagsExpanded) return allTags;
+    const filtered = allTags.filter(
+      ([tag, count]) => count >= TAG_MIN_COUNT || tag === activeTag
+    );
+    return filtered;
+  }, [allTags, tagsExpanded, activeTag]);
+  const hiddenTagCount = allTags.length - visibleTags.length;
+
   // Filter + sort
   const filtered = useMemo(() => {
     let packs = allPacks;
@@ -251,7 +263,7 @@ export function PacksClient() {
               active={!activeTag}
               onClick={() => handleSetTag(null)}
             />
-            {allTags.map(([tag, count]) => (
+            {visibleTags.map(([tag, count]) => (
               <FilterPill
                 key={tag}
                 label={tag}
@@ -262,6 +274,16 @@ export function PacksClient() {
                 }
               />
             ))}
+            {allTags.length > visibleTags.length || tagsExpanded ? (
+              <button
+                onClick={() => setTagsExpanded(!tagsExpanded)}
+                className="font-mono text-xs px-2.5 py-1 rounded-full border border-gold/40 text-gold/70 bg-gold/5 hover:bg-gold/10 hover:text-gold hover:border-gold/60 transition-colors"
+              >
+                {tagsExpanded
+                  ? "Show less"
+                  : `+${hiddenTagCount} more`}
+              </button>
+            ) : null}
           </div>
         </div>
       )}
@@ -396,8 +418,8 @@ export function PacksClient() {
 
 const PILL_INACTIVE_STYLES = {
   default:
-    "border-surface-border text-text-dim hover:border-gold/50 hover:text-text-muted",
-  lang: "border-amber-700/50 text-amber-500/70 hover:border-gold/50 hover:text-gold uppercase",
+    "border-surface-border text-text-subtle hover:border-gold/50 hover:text-text-muted",
+  lang: "border-amber-700/50 text-amber-500/70 hover:border-gold/50 hover:text-gold",
 };
 
 function FilterPill({

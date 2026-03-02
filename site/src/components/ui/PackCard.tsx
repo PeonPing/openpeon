@@ -49,7 +49,7 @@ export function PackCard({ pack }: { pack: PackMeta }) {
           {pack.tags.slice(0, 5).map((tag) => (
             <span
               key={tag}
-              className="font-mono text-[10px] px-1.5 py-0.5 rounded bg-surface-bg border border-surface-border text-text-dim"
+              className="font-mono text-[10px] px-1.5 py-0.5 rounded bg-surface-bg border border-surface-border text-text-subtle"
             >
               {tag}
             </span>
