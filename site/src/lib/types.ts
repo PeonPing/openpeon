@@ -33,6 +33,7 @@ export interface PackMeta {
   previewSounds: SoundEntry[];
   sourceRepo?: string;
   sourcePath?: string;
+  dateAdded?: string;
 }
 
 export interface PacksData {
