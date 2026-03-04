@@ -60,11 +60,13 @@ export function AudioPlayer({
   label,
   id,
   compact,
+  iconOnly,
 }: {
   url: string;
   label: string;
   id: string;
   compact?: boolean;
+  iconOnly?: boolean;
 }) {
   const { play, stop, currentId } = useAudio();
   const isPlaying = currentId === id;
@@ -78,6 +80,23 @@ export function AudioPlayer({
       play(url, id);
     }
   };
+
+  if (iconOnly) {
+    return (
+      <button
+        onClick={handleClick}
+        aria-label={`${isPlaying ? "Stop" : "Play"}: ${label}`}
+        title={label}
+        className={`flex-shrink-0 flex items-center justify-center w-7 h-7 rounded-full transition-colors text-xs ${
+          isPlaying
+            ? "bg-gold text-black shadow-[0_0_8px_rgba(255,171,1,0.3)]"
+            : "bg-surface-border text-text-muted hover:bg-gold/20 hover:text-gold"
+        }`}
+      >
+        {isPlaying ? "■" : "▶"}
+      </button>
+    );
+  }
 
   return (
     <button
