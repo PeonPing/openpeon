@@ -34,6 +34,7 @@ export interface PackMeta {
   sourceRepo?: string;
   sourcePath?: string;
   dateAdded?: string;
+  dateUpdated?: string;
 }
 
 export interface PacksData {

@@ -137,6 +137,7 @@ interface RegistryEntry {
   tags?: string[];
   quality?: "gold" | "silver" | "flagged" | "unreviewed";
   added?: string;
+  updated?: string;
 }
 
 interface PackData {
@@ -159,6 +160,7 @@ interface PackData {
   sourceRepo?: string;
   sourcePath?: string;
   dateAdded?: string;
+  dateUpdated?: string;
 }
 
 // ── Config ──────────────────────────────────────────────────────────────────
@@ -179,7 +181,7 @@ const REGISTRY_INDEX_URL =
 // ── Helpers ─────────────────────────────────────────────────────────────────
 // audioBase should be the URL of the directory containing sounds/
 // e.g. "https://raw.../og-packs/v1.0.0/peon" or "https://raw.../mypack/v1.0.0"
-function processManifest(manifest: Manifest, packName: string, audioBase: string, trustTier: string = "community", registryTags?: string[], sourceRepo?: string, sourcePath?: string, quality?: "gold" | "silver" | "flagged" | "unreviewed", dateAdded?: string): PackData {
+function processManifest(manifest: Manifest, packName: string, audioBase: string, trustTier: string = "community", registryTags?: string[], sourceRepo?: string, sourcePath?: string, quality?: "gold" | "silver" | "flagged" | "unreviewed", dateAdded?: string, dateUpdated?: string): PackData {
   const categories: PackData["categories"] = [];
   const previewSounds: PackData["previewSounds"] = [];
   let soundCount = 0;
@@ -224,6 +226,7 @@ function processManifest(manifest: Manifest, packName: string, audioBase: string
     sourceRepo,
     sourcePath,
     dateAdded,
+    dateUpdated,
   };
 }
 
@@ -305,7 +308,7 @@ async function generateFromRemote(): Promise<PackData[]> {
           ? `${rawBase}/${entry.source_path}`
           : rawBase;
 
-        return processManifest(manifest, packName, audioBase, entry.trust_tier || "community", entry.tags, entry.source_repo, entry.source_path || undefined, entry.quality, entry.added);
+        return processManifest(manifest, packName, audioBase, entry.trust_tier || "community", entry.tags, entry.source_repo, entry.source_path || undefined, entry.quality, entry.added, entry.updated);
       })
     );
 
