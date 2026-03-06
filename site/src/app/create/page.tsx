@@ -172,7 +172,7 @@ git tag v1.0.0 && git push origin v1.0.0`}
 
 export default function CreatePage() {
   return (
-    <div className="mx-auto max-w-3xl px-4 py-12">
+    <div className="mx-auto max-w-3xl px-5 sm:px-6 py-12">
       <h1 className="font-display text-3xl text-text-primary mb-2">
         Create a Sound Pack
       </h1>

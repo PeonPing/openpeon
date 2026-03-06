@@ -19,9 +19,9 @@ export default async function HomePage() {
     .slice(0, 6);
 
   return (
-    <div className="mx-auto max-w-5xl px-4">
+    <div className="mx-auto max-w-5xl px-5 sm:px-6">
       {/* Hero */}
-      <section className="py-20 md:py-28 text-center relative">
+      <section className="py-20 md:py-28 text-center relative overflow-hidden">
         <div className="absolute inset-0 -z-10 flex items-center justify-center">
           <div className="w-[500px] h-[500px] rounded-full bg-[radial-gradient(circle,rgba(255,171,1,0.08)_0%,transparent_70%)] blur-3xl" />
         </div>
@@ -93,7 +93,7 @@ export default async function HomePage() {
         <h2 className="font-display text-2xl text-text-primary mb-6">
           Event Categories
         </h2>
-        <div className="rounded-lg border border-surface-border overflow-hidden">
+        <div className="rounded-lg border border-surface-border overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b border-surface-border bg-surface-card">
@@ -164,7 +164,7 @@ export default async function HomePage() {
           Get Started
         </h2>
         <div className="grid md:grid-cols-3 gap-4">
-          <div className="rounded-lg border border-surface-border bg-surface-card p-6">
+          <div className="rounded-lg border border-surface-border bg-surface-card p-6 min-w-0">
             <h3 className="font-display text-lg text-text-primary mb-2">
               Use Sound Packs
             </h3>
@@ -215,7 +215,7 @@ export default async function HomePage() {
         <h2 className="font-display text-2xl text-text-primary mb-6">
           CESP Implementations
         </h2>
-        <div className="rounded-lg border border-surface-border overflow-hidden">
+        <div className="rounded-lg border border-surface-border overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b border-surface-border bg-surface-card">

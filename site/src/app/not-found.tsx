@@ -2,7 +2,7 @@ import Link from "next/link";
 
 export default function NotFound() {
   return (
-    <div className="mx-auto max-w-5xl px-4 py-32 text-center">
+    <div className="mx-auto max-w-5xl px-5 sm:px-6 py-32 text-center">
       <h1 className="font-display text-6xl text-gold mb-4">404</h1>
       <p className="text-lg text-text-muted mb-8">
         Pack not found. Maybe it wandered off to gather resources.

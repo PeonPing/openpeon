@@ -140,7 +140,7 @@ export function TrackerClient() {
   }, [fetchPRs]);
 
   return (
-    <div className="mx-auto max-w-5xl px-4 py-12">
+    <div className="mx-auto max-w-5xl px-5 sm:px-6 py-12">
       {/* Header */}
       <div className="flex items-start justify-between gap-4 mb-2">
         <h1 className="font-display text-3xl text-text-primary">

@@ -47,7 +47,7 @@ export default async function PackDetailPage({
   const next = idx < allPacks.length - 1 ? allPacks[idx + 1] : null;
 
   return (
-    <div className="mx-auto max-w-5xl px-4 py-12">
+    <div className="mx-auto max-w-5xl px-5 sm:px-6 py-12">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{

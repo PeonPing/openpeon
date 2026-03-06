@@ -1,6 +1,13 @@
 "use client";
 
-import { useState, useMemo, useCallback, useEffect, startTransition } from "react";
+import {
+  useState,
+  useMemo,
+  useCallback,
+  useEffect,
+  useRef,
+  startTransition,
+} from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import type { PackMeta } from "@/lib/types";
 import { LANGUAGE_LABELS } from "@/lib/constants";
@@ -12,7 +19,13 @@ import { ErrorBoundary } from "@/components/ui/ErrorBoundary";
 
 const PACKS_PER_PAGE = 24;
 
-type SortKey = "name-asc" | "name-desc" | "sounds-desc" | "sounds-asc" | "date-desc" | "date-asc";
+type SortKey =
+  | "name-asc"
+  | "name-desc"
+  | "sounds-desc"
+  | "sounds-asc"
+  | "date-desc"
+  | "date-asc";
 
 const SORT_OPTIONS: { value: SortKey; label: string }[] = [
   { value: "name-asc", label: "A → Z" },
@@ -64,18 +77,24 @@ export function PacksClient({ packs: allPacks }: { packs: PackMeta[] }) {
   // Read initial state from URL
   const [query, setQuery] = useState(searchParams.get("q") || "");
   const [activeTag, setActiveTag] = useState<string | null>(
-    searchParams.get("tag") || null
+    searchParams.get("tag") || null,
   );
   const [activeLang, setActiveLang] = useState<string | null>(
-    searchParams.get("lang") || null
+    searchParams.get("lang") || null,
+  );
+  const [activeFranchise, setActiveFranchise] = useState<string | null>(
+    searchParams.get("franchise") || null,
   );
   const [sortKey, setSortKey] = useState<SortKey>(
-    (searchParams.get("sort") as SortKey) || "date-desc"
+    (searchParams.get("sort") as SortKey) || "date-desc",
   );
   const [page, setPage] = useState(
-    Math.max(1, parseInt(searchParams.get("page") || "1", 10) || 1)
+    Math.max(1, parseInt(searchParams.get("page") || "1", 10) || 1),
   );
-  const [tagsExpanded, setTagsExpanded] = useState(false);
+  const [expandedFilter, setExpandedFilter] = useState<
+    "franchises" | "tags" | "langs" | null
+  >(null);
+  const gridRef = useRef<HTMLDivElement>(null);
 
   // Sync state → URL
   const updateUrl = useCallback(
@@ -94,7 +113,7 @@ export function PacksClient({ packs: allPacks }: { packs: PackMeta[] }) {
       const qs = params.toString();
       router.replace(qs ? `?${qs}` : "/packs", { scroll: false });
     },
-    [searchParams, router]
+    [searchParams, router],
   );
 
   // Wrapped setters that also update URL
@@ -104,7 +123,7 @@ export function PacksClient({ packs: allPacks }: { packs: PackMeta[] }) {
       setPage(1);
       updateUrl({ q: q || null, page: null });
     },
-    [updateUrl]
+    [updateUrl],
   );
 
   const handleSetTag = useCallback(
@@ -113,7 +132,7 @@ export function PacksClient({ packs: allPacks }: { packs: PackMeta[] }) {
       setPage(1);
       updateUrl({ tag, page: null });
     },
-    [updateUrl]
+    [updateUrl],
   );
 
   const handleSetLang = useCallback(
@@ -122,7 +141,16 @@ export function PacksClient({ packs: allPacks }: { packs: PackMeta[] }) {
       setPage(1);
       updateUrl({ lang, page: null });
     },
-    [updateUrl]
+    [updateUrl],
+  );
+
+  const handleSetFranchise = useCallback(
+    (franchise: string | null) => {
+      setActiveFranchise(franchise);
+      setPage(1);
+      updateUrl({ franchise, page: null });
+    },
+    [updateUrl],
   );
 
   const handleSetSort = useCallback(
@@ -131,44 +159,69 @@ export function PacksClient({ packs: allPacks }: { packs: PackMeta[] }) {
       setPage(1);
       updateUrl({ sort: sort === "date-desc" ? null : sort, page: null });
     },
-    [updateUrl]
+    [updateUrl],
   );
 
   const handleSetPage = useCallback(
     (p: number) => {
       setPage(p);
       updateUrl({ page: p === 1 ? null : String(p) });
-      window.scrollTo({ top: 0, behavior: "smooth" });
+      gridRef.current?.scrollIntoView({ behavior: "smooth" });
     },
-    [updateUrl]
+    [updateUrl],
   );
 
-  // Derive tag and language counts
-  const { allTags, allLangs } = useMemo(() => {
+  // Derive tag, language, and franchise counts
+  const { allTags, allLangs, allFranchises } = useMemo(() => {
     const tagCounts = new Map<string, number>();
     const langCounts = new Map<string, number>();
+    const franchiseCounts = new Map<string, number>();
     for (const p of allPacks) {
       for (const t of p.tags || []) {
         tagCounts.set(t, (tagCounts.get(t) || 0) + 1);
       }
       langCounts.set(p.language, (langCounts.get(p.language) || 0) + 1);
+      if (p.franchise.name && p.franchise.name !== "Unknown") {
+        franchiseCounts.set(
+          p.franchise.name,
+          (franchiseCounts.get(p.franchise.name) || 0) + 1,
+        );
+      }
     }
     return {
       allTags: [...tagCounts.entries()].sort((a, b) => b[1] - a[1]),
       allLangs: [...langCounts.entries()].sort((a, b) => b[1] - a[1]),
+      allFranchises: [...franchiseCounts.entries()].sort((a, b) => b[1] - a[1]),
     };
   }, [allPacks]);
 
-  // Visible tags (collapsed = only tags with count >= 3, plus active tag)
-  const TAG_MIN_COUNT = 3;
-  const visibleTags = useMemo(() => {
-    if (tagsExpanded) return allTags;
-    const filtered = allTags.filter(
-      ([tag, count]) => count >= TAG_MIN_COUNT || tag === activeTag
-    );
-    return filtered;
-  }, [allTags, tagsExpanded, activeTag]);
-  const hiddenTagCount = allTags.length - visibleTags.length;
+  const tagsRef = useRef<HTMLDivElement>(null);
+  const langsRef = useRef<HTMLDivElement>(null);
+  const franchisesRef = useRef<HTMLDivElement>(null);
+  const [tagsOverflow, setTagsOverflow] = useState(false);
+  const [langsOverflow, setLangsOverflow] = useState(false);
+  const [franchisesOverflow, setFranchisesOverflow] = useState(false);
+
+  useEffect(() => {
+    const check = () => {
+      if (tagsRef.current)
+        setTagsOverflow(
+          tagsRef.current.scrollHeight > tagsRef.current.clientHeight,
+        );
+      if (langsRef.current)
+        setLangsOverflow(
+          langsRef.current.scrollHeight > langsRef.current.clientHeight,
+        );
+      if (franchisesRef.current)
+        setFranchisesOverflow(
+          franchisesRef.current.scrollHeight >
+            franchisesRef.current.clientHeight,
+        );
+    };
+    check();
+    window.addEventListener("resize", check);
+    return () => window.removeEventListener("resize", check);
+  }, [allTags, allLangs, allFranchises]);
 
   // Filter + sort
   const filtered = useMemo(() => {
@@ -179,6 +232,9 @@ export function PacksClient({ packs: allPacks }: { packs: PackMeta[] }) {
     }
     if (activeLang) {
       packs = packs.filter((p) => p.language === activeLang);
+    }
+    if (activeFranchise) {
+      packs = packs.filter((p) => p.franchise.name === activeFranchise);
     }
     if (query) {
       const q = query.toLowerCase();
@@ -200,14 +256,14 @@ export function PacksClient({ packs: allPacks }: { packs: PackMeta[] }) {
     }
 
     return sortPacks(packs, sortKey);
-  }, [allPacks, query, activeTag, activeLang, sortKey]);
+  }, [allPacks, query, activeTag, activeLang, activeFranchise, sortKey]);
 
   // Pagination
   const totalPages = Math.max(1, Math.ceil(filtered.length / PACKS_PER_PAGE));
   const safePage = Math.min(page, totalPages);
   const paginatedPacks = filtered.slice(
     (safePage - 1) * PACKS_PER_PAGE,
-    safePage * PACKS_PER_PAGE
+    safePage * PACKS_PER_PAGE,
   );
 
   // Reset page if it exceeds total after filter change
@@ -218,7 +274,7 @@ export function PacksClient({ packs: allPacks }: { packs: PackMeta[] }) {
   }, [page, totalPages]);
 
   return (
-    <div className="mx-auto max-w-5xl px-4 py-12">
+    <div className="mx-auto max-w-5xl px-5 sm:px-6 py-12">
       <h1 className="font-display text-3xl text-text-primary mb-2">
         Sound Packs
       </h1>
@@ -226,76 +282,176 @@ export function PacksClient({ packs: allPacks }: { packs: PackMeta[] }) {
         {allPacks.length} CESP-compatible sound packs for your IDE.
       </p>
 
-      {/* Tag pills */}
-      {allTags.length > 0 && (
-        <div className="flex items-start gap-3 mb-3">
-          <span className="font-mono text-[11px] text-text-dim uppercase tracking-wide pt-1.5 shrink-0">
-            Tags
-          </span>
-          <div className="flex flex-wrap gap-1.5">
-            <FilterPill
-              label="All"
-              count={allPacks.length}
-              active={!activeTag}
-              onClick={() => handleSetTag(null)}
-            />
-            {visibleTags.map(([tag, count]) => (
-              <FilterPill
-                key={tag}
-                label={tag}
-                count={count}
-                active={activeTag === tag}
-                onClick={() =>
-                  handleSetTag(activeTag === tag ? null : tag)
-                }
-              />
-            ))}
-            {allTags.length > visibleTags.length || tagsExpanded ? (
-              <button
-                onClick={() => setTagsExpanded(!tagsExpanded)}
-                className="font-mono text-xs px-2.5 py-1 rounded-full border border-gold/40 text-gold/70 bg-gold/5 hover:bg-gold/10 hover:text-gold hover:border-gold/60 transition-colors"
+      {/* Filters — expanded goes full-width, others share a row */}
+      <div
+        className={`grid grid-cols-1 gap-3 mb-4 ${expandedFilter ? "md:grid-cols-2" : "md:grid-cols-3"}`}
+      >
+        {/* Franchise pills */}
+        {allFranchises.length > 0 && (
+          <div
+            className={
+              expandedFilter === "franchises"
+                ? "md:col-span-2 md:order-first"
+                : expandedFilter
+                  ? "md:order-last"
+                  : ""
+            }
+          >
+            <span className="font-mono text-[11px] text-text-dim uppercase tracking-wide mb-1.5 block">
+              Franchises{" "}
+              <span className="text-text-dim/50">({allFranchises.length})</span>
+            </span>
+            <div className="relative">
+              <div
+                ref={franchisesRef}
+                className={`flex flex-wrap gap-1.5 rounded-lg border border-surface-border bg-surface-card/50 p-2.5 overflow-y-auto overscroll-contain transition-[max-height] duration-200 ${expandedFilter === "franchises" ? "max-h-80" : "max-h-36"}`}
               >
-                {tagsExpanded
-                  ? "Show less"
-                  : `+${hiddenTagCount} more`}
-              </button>
-            ) : null}
+                <FilterPill
+                  label="All"
+                  count={allPacks.length}
+                  active={!activeFranchise}
+                  onClick={() => handleSetFranchise(null)}
+                  variant="franchise"
+                />
+                {allFranchises.map(([franchise, count]) => (
+                  <FilterPill
+                    key={franchise}
+                    label={franchise}
+                    count={count}
+                    active={activeFranchise === franchise}
+                    onClick={() =>
+                      handleSetFranchise(
+                        activeFranchise === franchise ? null : franchise,
+                      )
+                    }
+                    variant="franchise"
+                  />
+                ))}
+              </div>
+              {(franchisesOverflow || expandedFilter === "franchises") && (
+                <button
+                  onClick={() =>
+                    setExpandedFilter(
+                      expandedFilter === "franchises" ? null : "franchises",
+                    )
+                  }
+                  className="absolute bottom-1.5 right-1.5 px-2 py-0.5 rounded border border-surface-border bg-surface-bg/90 font-mono text-[10px] text-text-dim hover:text-gold hover:border-gold/50 transition-colors"
+                >
+                  {expandedFilter === "franchises" ? "Show less" : "Show more"}
+                </button>
+              )}
+            </div>
           </div>
-        </div>
-      )}
+        )}
 
-      {/* Language pills */}
-      {allLangs.length > 0 && (
-        <div className="flex items-start gap-3 mb-4">
-          <span className="font-mono text-[11px] text-text-dim uppercase tracking-wide pt-1.5 shrink-0">
-            Lang
-          </span>
-          <div className="flex flex-wrap gap-1.5">
-            <FilterPill
-              label="All"
-              count={allPacks.length}
-              active={!activeLang}
-              onClick={() => handleSetLang(null)}
-              variant="lang"
-            />
-            {allLangs.map(([lang, count]) => (
-              <FilterPill
-                key={lang}
-                label={LANGUAGE_LABELS[lang] ?? lang.toUpperCase()}
-                count={count}
-                active={activeLang === lang}
-                onClick={() =>
-                  handleSetLang(activeLang === lang ? null : lang)
-                }
-                variant="lang"
-              />
-            ))}
+        {/* Tag pills */}
+        {allTags.length > 0 && (
+          <div
+            className={
+              expandedFilter === "tags"
+                ? "md:col-span-2 md:order-first"
+                : expandedFilter
+                  ? "md:order-last"
+                  : ""
+            }
+          >
+            <span className="font-mono text-[11px] text-text-dim uppercase tracking-wide mb-1.5 block">
+              Tags <span className="text-text-dim/50">({allTags.length})</span>
+            </span>
+            <div className="relative">
+              <div
+                ref={tagsRef}
+                className={`flex flex-wrap gap-1.5 rounded-lg border border-surface-border bg-surface-card/50 p-2.5 overflow-y-auto overscroll-contain transition-[max-height] duration-200 ${expandedFilter === "tags" ? "max-h-80" : "max-h-36"}`}
+              >
+                <FilterPill
+                  label="All"
+                  count={allPacks.length}
+                  active={!activeTag}
+                  onClick={() => handleSetTag(null)}
+                />
+                {allTags.map(([tag, count]) => (
+                  <FilterPill
+                    key={tag}
+                    label={tag}
+                    count={count}
+                    active={activeTag === tag}
+                    onClick={() => handleSetTag(activeTag === tag ? null : tag)}
+                  />
+                ))}
+              </div>
+              {(tagsOverflow || expandedFilter === "tags") && (
+                <button
+                  onClick={() =>
+                    setExpandedFilter(expandedFilter === "tags" ? null : "tags")
+                  }
+                  className="absolute bottom-1.5 right-1.5 px-2 py-0.5 rounded border border-surface-border bg-surface-bg/90 font-mono text-[10px] text-text-dim hover:text-gold hover:border-gold/50 transition-colors"
+                >
+                  {expandedFilter === "tags" ? "Show less" : "Show more"}
+                </button>
+              )}
+            </div>
           </div>
-        </div>
-      )}
+        )}
+
+        {/* Language pills */}
+        {allLangs.length > 0 && (
+          <div
+            className={
+              expandedFilter === "langs"
+                ? "md:col-span-2 md:order-first"
+                : expandedFilter
+                  ? "md:order-last"
+                  : ""
+            }
+          >
+            <span className="font-mono text-[11px] text-text-dim uppercase tracking-wide mb-1.5 block">
+              Languages{" "}
+              <span className="text-text-dim/50">({allLangs.length})</span>
+            </span>
+            <div className="relative">
+              <div
+                ref={langsRef}
+                className={`flex flex-wrap gap-1.5 rounded-lg border border-surface-border bg-surface-card/50 p-2.5 overflow-y-auto overscroll-contain transition-[max-height] duration-200 ${expandedFilter === "langs" ? "max-h-80" : "max-h-36"}`}
+              >
+                <FilterPill
+                  label="All"
+                  count={allPacks.length}
+                  active={!activeLang}
+                  onClick={() => handleSetLang(null)}
+                  variant="lang"
+                />
+                {allLangs.map(([lang, count]) => (
+                  <FilterPill
+                    key={lang}
+                    label={LANGUAGE_LABELS[lang] ?? lang.toUpperCase()}
+                    count={count}
+                    active={activeLang === lang}
+                    onClick={() =>
+                      handleSetLang(activeLang === lang ? null : lang)
+                    }
+                    variant="lang"
+                  />
+                ))}
+              </div>
+              {(langsOverflow || expandedFilter === "langs") && (
+                <button
+                  onClick={() =>
+                    setExpandedFilter(
+                      expandedFilter === "langs" ? null : "langs",
+                    )
+                  }
+                  className="absolute bottom-1.5 right-1.5 px-2 py-0.5 rounded border border-surface-border bg-surface-bg/90 font-mono text-[10px] text-text-dim hover:text-gold hover:border-gold/50 transition-colors"
+                >
+                  {expandedFilter === "langs" ? "Show less" : "Show more"}
+                </button>
+              )}
+            </div>
+          </div>
+        )}
+      </div>
 
       {/* Search + Sort */}
-      <div className="flex gap-3 mb-4">
+      <div className="flex flex-col sm:flex-row gap-3 mb-4">
         <div className="flex-1">
           <SearchInput
             value={query}
@@ -316,7 +472,10 @@ export function PacksClient({ packs: allPacks }: { packs: PackMeta[] }) {
         </select>
       </div>
 
-      <div className="flex items-center justify-between text-xs text-text-dim mb-4">
+      <div
+        ref={gridRef}
+        className="scroll-mt-16 flex items-center justify-between text-xs text-text-dim mb-4"
+      >
         <p>
           Showing {(safePage - 1) * PACKS_PER_PAGE + 1}–
           {Math.min(safePage * PACKS_PER_PAGE, filtered.length)} of{" "}
@@ -356,34 +515,69 @@ export function PacksClient({ packs: allPacks }: { packs: PackMeta[] }) {
 
       {/* Pagination */}
       {totalPages > 1 && (
-        <div className="flex items-center justify-center gap-2 mt-8">
-          <button
-            onClick={() => handleSetPage(safePage - 1)}
-            disabled={safePage <= 1}
-            className="rounded-lg border border-surface-border bg-surface-card px-3 py-1.5 text-sm text-text-muted hover:border-gold/50 hover:text-gold transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
-          >
-            &larr; Prev
-          </button>
-          {Array.from({ length: totalPages }, (_, i) => i + 1).map((p) => (
+        <div className="mt-8">
+          {/* Desktop: single row */}
+          <div className="hidden sm:flex items-center justify-center gap-2">
             <button
-              key={p}
-              onClick={() => handleSetPage(p)}
-              className={`rounded-lg border px-3 py-1.5 text-sm font-mono transition-colors ${
-                p === safePage
-                  ? "border-gold text-gold bg-gold/10"
-                  : "border-surface-border text-text-dim hover:border-gold/50 hover:text-text-muted"
-              }`}
+              onClick={() => handleSetPage(safePage - 1)}
+              disabled={safePage <= 1}
+              className="rounded-lg border border-surface-border bg-surface-card px-3 py-1.5 text-sm text-text-muted hover:border-gold/50 hover:text-gold transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
             >
-              {p}
+              &larr; Prev
             </button>
-          ))}
-          <button
-            onClick={() => handleSetPage(safePage + 1)}
-            disabled={safePage >= totalPages}
-            className="rounded-lg border border-surface-border bg-surface-card px-3 py-1.5 text-sm text-text-muted hover:border-gold/50 hover:text-gold transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
-          >
-            Next &rarr;
-          </button>
+            {Array.from({ length: totalPages }, (_, i) => i + 1).map((p) => (
+              <button
+                key={p}
+                onClick={() => handleSetPage(p)}
+                className={`rounded-lg border px-3 py-1.5 text-sm font-mono transition-colors ${
+                  p === safePage
+                    ? "border-gold text-gold bg-gold/10"
+                    : "border-surface-border text-text-dim hover:border-gold/50 hover:text-text-muted"
+                }`}
+              >
+                {p}
+              </button>
+            ))}
+            <button
+              onClick={() => handleSetPage(safePage + 1)}
+              disabled={safePage >= totalPages}
+              className="rounded-lg border border-surface-border bg-surface-card px-3 py-1.5 text-sm text-text-muted hover:border-gold/50 hover:text-gold transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
+            >
+              Next &rarr;
+            </button>
+          </div>
+          {/* Mobile: stacked */}
+          <div className="flex sm:hidden flex-col items-center gap-2">
+            <button
+              onClick={() => handleSetPage(safePage - 1)}
+              disabled={safePage <= 1}
+              className="w-full rounded-lg border border-surface-border bg-surface-card px-3 py-2 text-sm text-text-muted hover:border-gold/50 hover:text-gold transition-colors disabled:opacity-30 disabled:cursor-not-allowed text-center"
+            >
+              &larr; Prev
+            </button>
+            <div className="flex flex-wrap justify-center gap-1.5">
+              {Array.from({ length: totalPages }, (_, i) => i + 1).map((p) => (
+                <button
+                  key={p}
+                  onClick={() => handleSetPage(p)}
+                  className={`rounded-lg border px-2.5 py-1 text-xs font-mono transition-colors ${
+                    p === safePage
+                      ? "border-gold text-gold bg-gold/10"
+                      : "border-surface-border text-text-dim hover:border-gold/50 hover:text-text-muted"
+                  }`}
+                >
+                  {p}
+                </button>
+              ))}
+            </div>
+            <button
+              onClick={() => handleSetPage(safePage + 1)}
+              disabled={safePage >= totalPages}
+              className="w-full rounded-lg border border-surface-border bg-surface-card px-3 py-2 text-sm text-text-muted hover:border-gold/50 hover:text-gold transition-colors disabled:opacity-30 disabled:cursor-not-allowed text-center"
+            >
+              Next &rarr;
+            </button>
+          </div>
         </div>
       )}
     </div>
@@ -394,8 +588,10 @@ export function PacksClient({ packs: allPacks }: { packs: PackMeta[] }) {
 
 const PILL_INACTIVE_STYLES = {
   default:
-    "border-surface-border text-text-subtle hover:border-gold/50 hover:text-text-muted",
+    "border-violet-700/50 text-violet-400/70 hover:border-violet-500/50 hover:text-violet-300",
   lang: "border-amber-700/50 text-amber-500/70 hover:border-gold/50 hover:text-gold",
+  franchise:
+    "border-emerald-700/50 text-emerald-400/70 hover:border-emerald-500/50 hover:text-emerald-300",
 };
 
 function FilterPill({
@@ -409,19 +605,22 @@ function FilterPill({
   count: number;
   active: boolean;
   onClick: () => void;
-  variant?: "default" | "lang";
+  variant?: "default" | "lang" | "franchise";
 }) {
   return (
     <button
       onClick={onClick}
       className={`font-mono text-xs px-2.5 py-1 rounded-full border transition-colors ${
         active
-          ? "border-gold text-gold bg-gold/10"
+          ? variant === "franchise"
+            ? "border-emerald-500 text-emerald-300 bg-emerald-500/10"
+            : variant === "default"
+              ? "border-violet-500 text-violet-300 bg-violet-500/10"
+              : "border-gold text-gold bg-gold/10"
           : PILL_INACTIVE_STYLES[variant]
       }`}
     >
-      {label}{" "}
-      <span className="opacity-50">{count}</span>
+      {label} <span className="opacity-50">{count}</span>
     </button>
   );
 }

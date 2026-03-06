@@ -89,7 +89,11 @@ function processManifest(manifest: Manifest, opts: ProcessOpts): PackMeta {
     }
   }
 
-  const lang = manifest.language || "en";
+  const rawLang = manifest.language || "";
+  // Normalize: "en-GB" → "en", "zh-CN" → "zh", "en,ru" → "en", "" → "unknown"
+  // Keep regional variants that have their own label (e.g. "pt-BR")
+  const normalizedLang = rawLang ? rawLang.split(",")[0].trim().toLowerCase() : "unknown";
+  const lang = LANGUAGE_LABELS[normalizedLang] ? normalizedLang : normalizedLang.split("-")[0];
   const resolvedTags = manifest.tags?.length ? manifest.tags : opts.registryTags;
 
   return {
@@ -99,7 +103,7 @@ function processManifest(manifest: Manifest, opts: ProcessOpts): PackMeta {
     author: manifest.author || { name: "Unknown", github: "" },
     license: manifest.license || "CC-BY-NC-4.0",
     language: lang,
-    languageLabel: LANGUAGE_LABELS[lang] || lang,
+    languageLabel: LANGUAGE_LABELS[lang] || lang.toUpperCase(),
     description: manifest.description,
     tags: resolvedTags || undefined,
     trustTier: opts.trustTier || "community",

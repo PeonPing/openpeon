@@ -18,7 +18,7 @@ export function Header() {
 
   return (
     <header className="sticky top-0 z-50 border-b border-surface-border bg-surface-bg/90 backdrop-blur-md">
-      <div className="mx-auto max-w-5xl flex items-center justify-between px-4 h-14">
+      <div className="mx-auto max-w-5xl flex items-center justify-between px-5 sm:px-6 h-14">
         <Link
           href="/"
           className="flex items-center gap-2 font-display text-xl text-text-primary hover:text-gold transition-colors"
@@ -70,7 +70,7 @@ export function Header() {
 
       {/* Mobile nav */}
       {menuOpen && (
-        <nav className="md:hidden border-t border-surface-border bg-surface-bg px-4 py-3 flex flex-col gap-3">
+        <nav className="md:hidden border-t border-surface-border bg-surface-bg px-5 sm:px-6 py-3 flex flex-col gap-3">
           {NAV_LINKS.map(({ href, label }) => (
             <Link
               key={href}

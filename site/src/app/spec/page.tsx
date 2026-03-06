@@ -63,7 +63,7 @@ const DIRECTORY_EXAMPLE = `my-pack/
 
 export default function SpecPage() {
   return (
-    <div className="mx-auto max-w-5xl px-4 py-12">
+    <div className="mx-auto max-w-5xl px-5 sm:px-6 py-12">
       <div className="lg:flex lg:gap-12">
         {/* Sidebar TOC */}
         <aside className="hidden lg:block lg:w-48 flex-shrink-0">
@@ -148,7 +148,7 @@ export default function SpecPage() {
             <h3 className="text-sm font-medium text-text-primary mt-6 mb-3">
               Core Categories
             </h3>
-            <div className="rounded-lg border border-surface-border overflow-hidden mb-6">
+            <div className="rounded-lg border border-surface-border overflow-x-auto mb-6">
               <table className="w-full text-sm">
                 <thead>
                   <tr className="border-b border-surface-border bg-surface-card">
@@ -172,7 +172,7 @@ export default function SpecPage() {
             <h3 className="text-sm font-medium text-text-primary mt-6 mb-3">
               Extended Categories
             </h3>
-            <div className="rounded-lg border border-surface-border overflow-hidden">
+            <div className="rounded-lg border border-surface-border overflow-x-auto">
               <table className="w-full text-sm">
                 <thead>
                   <tr className="border-b border-surface-border bg-surface-card">
@@ -207,7 +207,7 @@ export default function SpecPage() {
             <h3 className="text-sm font-medium text-text-primary mt-6 mb-3">
               Required Fields
             </h3>
-            <div className="rounded-lg border border-surface-border overflow-hidden mb-6">
+            <div className="rounded-lg border border-surface-border overflow-x-auto mb-6">
               <table className="w-full text-sm">
                 <thead>
                   <tr className="border-b border-surface-border bg-surface-card">
@@ -237,7 +237,7 @@ export default function SpecPage() {
             <h3 className="text-sm font-medium text-text-primary mt-6 mb-3">
               Recommended Fields
             </h3>
-            <div className="rounded-lg border border-surface-border overflow-hidden mb-6">
+            <div className="rounded-lg border border-surface-border overflow-x-auto mb-6">
               <table className="w-full text-sm">
                 <tbody>
                   {[
@@ -292,7 +292,7 @@ export default function SpecPage() {
             <h2 className="font-display text-xl text-text-primary mb-4">
               Audio Constraints
             </h2>
-            <div className="rounded-lg border border-surface-border overflow-hidden mb-4">
+            <div className="rounded-lg border border-surface-border overflow-x-auto mb-4">
               <table className="w-full text-sm">
                 <thead>
                   <tr className="border-b border-surface-border bg-surface-card">
@@ -331,7 +331,7 @@ export default function SpecPage() {
             <p className="text-text-body mb-4">
               Each IDE maps its own events to CESP categories. The mapping is defined by the player, not the pack.
             </p>
-            <div className="rounded-lg border border-surface-border overflow-hidden">
+            <div className="rounded-lg border border-surface-border overflow-x-auto">
               <table className="w-full text-sm">
                 <thead>
                   <tr className="border-b border-surface-border bg-surface-card">

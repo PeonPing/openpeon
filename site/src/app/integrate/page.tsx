@@ -28,7 +28,7 @@ const AGENT_SKILL = fs.readFileSync(
 
 export default function IntegratePage() {
   return (
-    <div className="mx-auto max-w-3xl px-4 py-12">
+    <div className="mx-auto max-w-3xl px-5 sm:px-6 py-12">
       <h1 className="font-display text-3xl text-text-primary mb-2">
         Add Sound Packs to Your CLI
       </h1>

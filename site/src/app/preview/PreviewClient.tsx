@@ -630,7 +630,7 @@ export function PreviewClient() {
   }, [stopAudio]);
 
   return (
-    <div className="mx-auto max-w-5xl px-4 py-12">
+    <div className="mx-auto max-w-5xl px-5 sm:px-6 py-12">
       <h1 className="font-display text-3xl text-text-primary mb-2">
         Pack Preview
       </h1>
