@@ -25,7 +25,8 @@ type SortKey =
   | "sounds-desc"
   | "sounds-asc"
   | "date-desc"
-  | "date-asc";
+  | "date-asc"
+  | "updated-desc";
 
 const SORT_OPTIONS: { value: SortKey; label: string }[] = [
   { value: "name-asc", label: "A → Z" },
@@ -34,6 +35,7 @@ const SORT_OPTIONS: { value: SortKey; label: string }[] = [
   { value: "sounds-asc", label: "Fewest sounds" },
   { value: "date-desc", label: "Newest" },
   { value: "date-asc", label: "Oldest" },
+  { value: "updated-desc", label: "Recently Updated" },
 ];
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
@@ -62,6 +64,15 @@ function sortPacks(packs: PackMeta[], key: SortKey) {
         if (!a.dateAdded) return 1;
         if (!b.dateAdded) return -1;
         return a.dateAdded.localeCompare(b.dateAdded);
+      });
+    case "updated-desc":
+      return sorted.sort((a, b) => {
+        const da = a.dateUpdated || a.dateAdded;
+        const db = b.dateUpdated || b.dateAdded;
+        if (!da && !db) return 0;
+        if (!da) return 1;
+        if (!db) return -1;
+        return db.localeCompare(da);
       });
     default:
       return sorted;
