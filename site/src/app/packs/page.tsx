@@ -12,9 +12,14 @@ export const metadata: Metadata = {
 export default async function PacksPage() {
   const packs = await fetchAllPacks();
 
+  const lastUpdated = packs.reduce((latest, p) => {
+    const d = p.dateUpdated || p.dateAdded;
+    return d && d > latest ? d : latest;
+  }, "");
+
   return (
     <Suspense>
-      <PacksClient packs={packs} />
+      <PacksClient packs={packs} lastUpdated={lastUpdated} />
     </Suspense>
   );
 }

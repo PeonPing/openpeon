@@ -70,7 +70,7 @@ function sortPacks(packs: PackMeta[], key: SortKey) {
 
 // ── Component ────────────────────────────────────────────────────────────────
 
-export function PacksClient({ packs: allPacks }: { packs: PackMeta[] }) {
+export function PacksClient({ packs: allPacks, lastUpdated }: { packs: PackMeta[]; lastUpdated: string }) {
   const router = useRouter();
   const searchParams = useSearchParams();
 
@@ -481,14 +481,16 @@ export function PacksClient({ packs: allPacks }: { packs: PackMeta[] }) {
           {Math.min(safePage * PACKS_PER_PAGE, filtered.length)} of{" "}
           {filtered.length} packs
         </p>
-        <p>
-          Updated{" "}
-          {new Date().toLocaleDateString("en-US", {
-            month: "short",
-            day: "numeric",
-            year: "numeric",
-          })}
-        </p>
+        {lastUpdated && (
+          <p>
+            Updated{" "}
+            {new Date(lastUpdated).toLocaleDateString("en-US", {
+              month: "short",
+              day: "numeric",
+              year: "numeric",
+            })}
+          </p>
+        )}
       </div>
 
       <ErrorBoundary>
