@@ -140,6 +140,10 @@ export function PackCard({ pack }: { pack: PackMeta }) {
             url={preview.audioUrl}
             label={preview.label}
             id={`card-${pack.name}`}
+            choices={pack.previewSounds.map((sound) => ({
+              url: sound.audioUrl,
+              label: sound.label,
+            }))}
             iconOnly
           />
         ) : (
