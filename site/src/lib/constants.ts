@@ -280,6 +280,7 @@ const FRANCHISES: Record<
       "wc2_sapper",
       "wc2_sappers",
       "wc2_human_ships",
+      "wc2_peon_ru",
     ],
   },
   "Warcraft III": {
