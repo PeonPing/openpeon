@@ -1,6 +1,6 @@
 "use client";
 
-import { createContext, useContext, useRef, useState, useCallback, type ReactNode } from "react";
+import { createContext, useContext, useRef, useState, useCallback, useMemo, type ReactNode } from "react";
 
 interface AudioContextValue {
   play: (url: string, id: string) => void;
@@ -59,17 +59,35 @@ export function AudioPlayer({
   url,
   label,
   id,
+  choices,
   compact,
   iconOnly,
 }: {
   url: string;
   label: string;
   id: string;
+  choices?: Array<{ url: string; label: string }>;
   compact?: boolean;
   iconOnly?: boolean;
 }) {
   const { play, stop, currentId } = useAudio();
   const isPlaying = currentId === id;
+  const normalizedChoices = useMemo(
+    () => choices?.length ? choices : [{ url, label }],
+    [choices, url, label]
+  );
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const currentChoice = normalizedChoices[currentIndex] || normalizedChoices[0];
+
+  const a11yLabel = isPlaying ? "Stop preview" : `Play: ${currentChoice.label}`;
+
+  const pickNextIndex = useCallback(() => {
+    if (normalizedChoices.length <= 1) return 0;
+    const candidates = normalizedChoices
+      .map((_, index) => index)
+      .filter((index) => index !== currentIndex);
+    return candidates[Math.floor(Math.random() * candidates.length)] ?? 0;
+  }, [currentIndex, normalizedChoices]);
 
   const handleClick = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -77,7 +95,8 @@ export function AudioPlayer({
     if (isPlaying) {
       stop();
     } else {
-      play(url, id);
+      play(currentChoice.url, id);
+      setCurrentIndex(pickNextIndex());
     }
   };
 
@@ -85,8 +104,8 @@ export function AudioPlayer({
     return (
       <button
         onClick={handleClick}
-        aria-label={`${isPlaying ? "Stop" : "Play"}: ${label}`}
-        title={label}
+        aria-label={a11yLabel}
+        title={currentChoice.label}
         className={`flex-shrink-0 flex items-center justify-center w-7 h-7 rounded-full transition-colors text-xs ${
           isPlaying
             ? "bg-gold text-black shadow-[0_0_8px_rgba(255,171,1,0.3)]"
@@ -101,7 +120,7 @@ export function AudioPlayer({
   return (
     <button
       onClick={handleClick}
-      aria-label={`${isPlaying ? "Stop" : "Play"}: ${label}`}
+      aria-label={a11yLabel}
       className={`group flex items-center gap-2 rounded-lg border transition-all duration-200 text-left ${
         isPlaying
           ? "border-gold bg-gold-glow shadow-[0_0_12px_rgba(255,171,1,0.2)]"
@@ -124,7 +143,7 @@ export function AudioPlayer({
           compact ? "text-xs" : "text-sm"
         }`}
       >
-        {label}
+        {currentChoice.label}
       </span>
     </button>
   );

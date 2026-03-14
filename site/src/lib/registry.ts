@@ -35,6 +35,7 @@ interface RegistryEntry {
   source_path: string;
   trust_tier?: string;
   tags?: string[];
+  preview_sounds?: string[];
   quality?: "gold" | "silver" | "flagged" | "unreviewed";
   added?: string;
   updated?: string;
@@ -61,6 +62,7 @@ interface ProcessOpts {
   audioBase: string;
   trustTier?: string;
   registryTags?: string[];
+  previewSoundFiles?: string[];
   sourceRepo?: string;
   sourcePath?: string;
   quality?: "gold" | "silver" | "flagged" | "unreviewed";
@@ -69,9 +71,36 @@ interface ProcessOpts {
   franchise?: { name: string; url: string };
 }
 
+function resolvePreviewSounds(
+  allSounds: PackMeta["previewSounds"],
+  previewSoundFiles?: string[],
+) {
+  if (!previewSoundFiles?.length) return [];
+
+  const byFile = new Map(allSounds.map((sound) => [sound.file, sound]));
+  const byBasename = new Map(
+    allSounds
+      .map((sound) => [sound.file.split("/").pop(), sound] as const)
+      .filter(([name]) => !!name),
+  );
+
+  const seen = new Set<string>();
+  const resolved: PackMeta["previewSounds"] = [];
+
+  for (const file of previewSoundFiles) {
+    const match = byFile.get(file) || byBasename.get(file.split("/").pop() || "");
+    if (match && !seen.has(match.file)) {
+      seen.add(match.file);
+      resolved.push(match);
+    }
+  }
+
+  return resolved;
+}
+
 function processManifest(manifest: Manifest, opts: ProcessOpts): PackMeta {
   const categories: PackMeta["categories"] = [];
-  const previewSounds: PackMeta["previewSounds"] = [];
+  const fallbackPreviewSounds: PackMeta["previewSounds"] = [];
   let soundCount = 0;
 
   for (const [catName, catData] of Object.entries(manifest.categories)) {
@@ -84,10 +113,13 @@ function processManifest(manifest: Manifest, opts: ProcessOpts): PackMeta {
     categories.push({ name: catName, sounds });
     soundCount += sounds.length;
 
-    if (sounds.length > 0 && previewSounds.length < 6) {
-      previewSounds.push(sounds[0]);
+    if (sounds.length > 0 && fallbackPreviewSounds.length < 6) {
+      fallbackPreviewSounds.push(sounds[0]);
     }
   }
+
+  const registryPreviewSounds = resolvePreviewSounds(categories.flatMap((category) => category.sounds), opts.previewSoundFiles);
+  const previewSounds = registryPreviewSounds.length > 0 ? registryPreviewSounds : fallbackPreviewSounds;
 
   const rawLang = manifest.language || "";
   // Normalize: "en-GB" → "en", "zh-CN" → "zh", "en,ru" → "en", "" → "unknown"
@@ -148,6 +180,7 @@ export async function fetchAllPacks(): Promise<PackMeta[]> {
         audioBase: entry.source_path ? `${rawBase}/${entry.source_path}` : rawBase,
         trustTier: entry.trust_tier,
         registryTags: entry.tags,
+        previewSoundFiles: entry.preview_sounds,
         sourceRepo: entry.source_repo,
         sourcePath: entry.source_path || undefined,
         quality: entry.quality,
