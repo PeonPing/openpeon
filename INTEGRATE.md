@@ -1,3 +1,5 @@
+<!-- last_updated: 2026-04-05 -->
+
 # Add CESP Sound Pack Support to This CLI
 
 You are adding sound pack support to this CLI using the CESP (Coding Event Sound Pack) open standard. CESP lets any CLI tap into 100+ community sound packs — from Warcraft peons to GLaDOS to StarCraft battlecruisers.
@@ -206,3 +208,9 @@ cp -r /tmp/og-packs-*/peon ~/.openpeon/packs/peon
 - 100+ packs: https://openpeon.com/packs
 - Reference implementation (bash): https://github.com/PeonPing/peon-ping
 - Reference implementation (TypeScript): https://github.com/PeonPing/peon-ping/blob/main/adapters/opencode/peon-ping.ts
+
+---
+
+*This file follows the [INTEGRATE.md standard](https://docs.appliedaisociety.org/docs/standards/integrate-md),
+an open format for teaching AI agents how to integrate libraries into codebases.
+Publish your own: https://docs.appliedaisociety.org/docs/standards/integrate-md*
