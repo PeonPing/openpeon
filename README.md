@@ -121,6 +121,7 @@ Packs are hosted in their own repos. Official packs are in [PeonPing/og-packs](h
 | Tool | Status | Link |
 |---|---|---|
 | [peon-ping](https://github.com/PeonPing/peon-ping) (Claude Code, Codex, Cursor, Windsurf, Kiro, Copilot, Gemini CLI, OpenCode, Kilo Code, Antigravity) | Reference implementation | 100+ packs |
+| [Claudette](https://github.com/utensils/claudette) (Claude Code Orchestrator) | Desktop companion GUI | — |
 | *Your CLI here* | — | [Integration guide](https://openpeon.com/integrate) |
 
 ## Website

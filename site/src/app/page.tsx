@@ -251,6 +251,26 @@ export default async function HomePage() {
                   </span>
                 </td>
               </tr>
+              <tr className="border-b border-surface-border/50">
+                <td className="px-4 py-3">
+                  <a
+                    href="https://github.com/utensils/claudette"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-gold hover:underline"
+                  >
+                    Claudette
+                  </a>
+                </td>
+                <td className="px-4 py-3 text-text-body">
+                  Claude Code GUI + Orchestrator
+                </td>
+                <td className="px-4 py-3">
+                  <span className="text-xs rounded-full bg-success/10 text-success px-2 py-0.5">
+                    Active
+                  </span>
+                </td>
+              </tr>
               <tr>
                 <td className="px-4 py-3 text-text-dim italic">Your CLI</td>
                 <td className="px-4 py-3 text-text-dim italic">Any tool</td>
