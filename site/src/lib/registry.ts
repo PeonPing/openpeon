@@ -155,6 +155,51 @@ function processManifest(manifest: Manifest, opts: ProcessOpts): PackMeta {
 
 // ── Data fetcher ────────────────────────────────────────────────────────────
 
+const MANIFEST_FETCH_CONCURRENCY = 12;
+const MANIFEST_FETCH_RETRIES = 2;
+const MANIFEST_RETRY_DELAY_MS = 400;
+
+async function fetchManifestWithRetry(
+  url: string,
+): Promise<Manifest | null> {
+  for (let attempt = 0; attempt <= MANIFEST_FETCH_RETRIES; attempt++) {
+    try {
+      const res = await fetch(url, FETCH_OPTIONS);
+      if (res.ok) {
+        return (await res.json()) as Manifest;
+      }
+      // 404 is permanent (pack moved/deleted), do not retry.
+      if (res.status === 404) return null;
+    } catch {
+      // network error, retryable
+    }
+    if (attempt < MANIFEST_FETCH_RETRIES) {
+      await new Promise((r) =>
+        setTimeout(r, MANIFEST_RETRY_DELAY_MS * (attempt + 1)),
+      );
+    }
+  }
+  return null;
+}
+
+async function mapWithConcurrency<T, R>(
+  items: T[],
+  limit: number,
+  fn: (item: T, index: number) => Promise<R>,
+): Promise<R[]> {
+  const results = new Array<R>(items.length);
+  let cursor = 0;
+  const workers = Array.from({ length: Math.min(limit, items.length) }, async () => {
+    while (true) {
+      const i = cursor++;
+      if (i >= items.length) return;
+      results[i] = await fn(items[i], i);
+    }
+  });
+  await Promise.all(workers);
+  return results;
+}
+
 export async function fetchAllPacks(): Promise<PackMeta[]> {
   const res = await fetch(REGISTRY_INDEX_URL, FETCH_OPTIONS);
   if (!res.ok) {
@@ -163,17 +208,17 @@ export async function fetchAllPacks(): Promise<PackMeta[]> {
   const index: { packs: RegistryEntry[] } = await res.json();
   const entries = index.packs.filter((e) => e.quality !== "flagged");
 
-  const results = await Promise.allSettled(
-    entries.map(async (entry) => {
+  const resolved = await mapWithConcurrency(
+    entries,
+    MANIFEST_FETCH_CONCURRENCY,
+    async (entry) => {
       const rawBase = `https://raw.githubusercontent.com/${entry.source_repo}/${entry.source_ref}`;
       const manifestUrl = entry.source_path
         ? `${rawBase}/${entry.source_path}/openpeon.json`
         : `${rawBase}/openpeon.json`;
 
-      const res = await fetch(manifestUrl, FETCH_OPTIONS);
-      if (!res.ok) return null;
-
-      const manifest: Manifest = await res.json();
+      const manifest = await fetchManifestWithRetry(manifestUrl);
+      if (!manifest) return null;
 
       return processManifest(manifest, {
         packName: manifest.name || entry.name,
@@ -188,15 +233,12 @@ export async function fetchAllPacks(): Promise<PackMeta[]> {
         dateUpdated: entry.updated,
         franchise: entry.franchise,
       });
-    }),
+    },
   );
 
-  const packs: PackMeta[] = [];
-  for (const result of results) {
-    if (result.status === "fulfilled" && result.value) {
-      packs.push(result.value);
-    }
-  }
+  const packs: PackMeta[] = resolved.filter(
+    (p): p is PackMeta => p !== null,
+  );
 
   packs.sort((a, b) => a.name.localeCompare(b.name));
   return packs;
