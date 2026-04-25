@@ -121,8 +121,17 @@ function processManifest(manifest: Manifest, opts: ProcessOpts): PackMeta {
   const registryPreviewSounds = resolvePreviewSounds(categories.flatMap((category) => category.sounds), opts.previewSoundFiles);
   const previewSounds = registryPreviewSounds.length > 0 ? registryPreviewSounds : fallbackPreviewSounds;
 
-  const rawLang = manifest.language || "";
-  // Normalize: "en-GB" → "en", "zh-CN" → "zh", "en,ru" → "en", "" → "unknown"
+  // Some community manifests ship `language` as an array (["en", "ru"]) or
+  // as a non-string. Coerce to a primary string so the .split() chain
+  // below never throws on bad data and dies during static-page collection.
+  const rawLangValue: unknown = manifest.language;
+  let rawLang = "";
+  if (typeof rawLangValue === "string") {
+    rawLang = rawLangValue;
+  } else if (Array.isArray(rawLangValue) && typeof rawLangValue[0] === "string") {
+    rawLang = rawLangValue[0];
+  }
+  // Normalize: "en-GB" -> "en", "zh-CN" -> "zh", "en,ru" -> "en", "" -> "unknown"
   // Keep regional variants that have their own label (e.g. "pt-BR")
   const normalizedLang = rawLang ? rawLang.split(",")[0].trim().toLowerCase() : "unknown";
   const lang = LANGUAGE_LABELS[normalizedLang] ? normalizedLang : normalizedLang.split("-")[0];
@@ -220,19 +229,32 @@ export async function fetchAllPacks(): Promise<PackMeta[]> {
       const manifest = await fetchManifestWithRetry(manifestUrl);
       if (!manifest) return null;
 
-      return processManifest(manifest, {
-        packName: manifest.name || entry.name,
-        audioBase: entry.source_path ? `${rawBase}/${entry.source_path}` : rawBase,
-        trustTier: entry.trust_tier,
-        registryTags: entry.tags,
-        previewSoundFiles: entry.preview_sounds,
-        sourceRepo: entry.source_repo,
-        sourcePath: entry.source_path || undefined,
-        quality: entry.quality,
-        dateAdded: entry.added,
-        dateUpdated: entry.updated,
-        franchise: entry.franchise,
-      });
+      // processManifest assumes well-formed manifest fields. A handful of
+      // community packs ship malformed data (non-string `language`, non-string
+      // sound `file`, etc.) which previously got silently dropped by
+      // Promise.allSettled. Preserve that drop-rather-than-crash behavior so
+      // one bad pack doesn't fail the whole build.
+      try {
+        return processManifest(manifest, {
+          packName: manifest.name || entry.name,
+          audioBase: entry.source_path ? `${rawBase}/${entry.source_path}` : rawBase,
+          trustTier: entry.trust_tier,
+          registryTags: entry.tags,
+          previewSoundFiles: entry.preview_sounds,
+          sourceRepo: entry.source_repo,
+          sourcePath: entry.source_path || undefined,
+          quality: entry.quality,
+          dateAdded: entry.added,
+          dateUpdated: entry.updated,
+          franchise: entry.franchise,
+        });
+      } catch (err) {
+        console.warn(
+          `[registry] dropping pack ${entry.name} due to malformed manifest:`,
+          err instanceof Error ? err.message : String(err),
+        );
+        return null;
+      }
     },
   );
 
