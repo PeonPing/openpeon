@@ -35,7 +35,7 @@ interface RegistryEntry {
   source_path: string;
   trust_tier?: string;
   tags?: string[];
-  preview_sounds?: string[];
+  preview_sounds?: Array<string | { file: string; label?: string }>;
   quality?: "gold" | "silver" | "flagged" | "unreviewed";
   added?: string;
   updated?: string;
@@ -62,7 +62,7 @@ interface ProcessOpts {
   audioBase: string;
   trustTier?: string;
   registryTags?: string[];
-  previewSoundFiles?: string[];
+  previewSoundFiles?: Array<string | { file: string; label?: string }>;
   sourceRepo?: string;
   sourcePath?: string;
   quality?: "gold" | "silver" | "flagged" | "unreviewed";
@@ -73,9 +73,25 @@ interface ProcessOpts {
 
 function resolvePreviewSounds(
   allSounds: PackMeta["previewSounds"],
-  previewSoundFiles?: string[],
+  previewSoundFiles?: Array<string | { file: string; label?: string }>,
 ) {
   if (!previewSoundFiles?.length) return [];
+
+  // Some registry entries ship preview_sounds as [{file, label}] objects
+  // instead of bare filename strings. Coerce both shapes to strings before
+  // splitting; otherwise processManifest throws "a.split is not a function"
+  // and the pack gets dropped from the build (e.g. itysl, solid_snake, speaki).
+  const fileStrings: string[] = previewSoundFiles
+    .map((entry) => {
+      if (typeof entry === "string") return entry;
+      if (entry && typeof entry === "object" && "file" in entry && typeof (entry as { file: unknown }).file === "string") {
+        return (entry as { file: string }).file;
+      }
+      return "";
+    })
+    .filter((s): s is string => s.length > 0);
+
+  if (!fileStrings.length) return [];
 
   const byFile = new Map(allSounds.map((sound) => [sound.file, sound]));
   const byBasename = new Map(
@@ -87,7 +103,7 @@ function resolvePreviewSounds(
   const seen = new Set<string>();
   const resolved: PackMeta["previewSounds"] = [];
 
-  for (const file of previewSoundFiles) {
+  for (const file of fileStrings) {
     const match = byFile.get(file) || byBasename.get(file.split("/").pop() || "");
     if (match && !seen.has(match.file)) {
       seen.add(match.file);
