@@ -235,8 +235,11 @@ export async function fetchAllPacks(): Promise<PackMeta[]> {
       // Promise.allSettled. Preserve that drop-rather-than-crash behavior so
       // one bad pack doesn't fail the whole build.
       try {
+        // Use the registry slug as the canonical identifier; manifest.name is
+        // contributor-freeform (e.g. "openpeon-elise-soundpack") and would
+        // 404 the per-pack page when the route uses entry.name as the slug.
         return processManifest(manifest, {
-          packName: manifest.name || entry.name,
+          packName: entry.name,
           audioBase: entry.source_path ? `${rawBase}/${entry.source_path}` : rawBase,
           trustTier: entry.trust_tier,
           registryTags: entry.tags,
