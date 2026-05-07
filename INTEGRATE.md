@@ -1,4 +1,4 @@
-<!-- last_updated: 2026-04-05 -->
+<!-- last_updated: 2026-05-06 -->
 
 # Add CESP Sound Pack Support to This CLI
 
@@ -211,6 +211,4 @@ cp -r /tmp/og-packs-*/peon ~/.openpeon/packs/peon
 
 ---
 
-*This file follows the [INTEGRATE.md standard](https://docs.appliedaisociety.org/docs/standards/integrate-md),
-an open format for teaching AI agents how to integrate libraries into codebases.
-Publish your own: https://docs.appliedaisociety.org/docs/standards/integrate-md*
+*This file follows the [INTEGRATE.md standard](https://docs.appliedaisociety.org/docs/standards/integrate-md), Flavor A (Library Into Codebase), an open format for teaching AI agents how to wire one system into another. Publish your own: https://docs.appliedaisociety.org/docs/standards/integrate-md*
