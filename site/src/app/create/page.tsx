@@ -176,9 +176,25 @@ export default function CreatePage() {
       <h1 className="font-display text-3xl text-text-primary mb-2">
         Create a Sound Pack
       </h1>
-      <p className="text-text-muted mb-10">
+      <p className="text-text-muted mb-6">
         Build a CESP-compatible pack in five steps.
       </p>
+
+      <div className="mb-10 rounded-lg border border-surface-border bg-surface-card p-4">
+        <p className="text-sm text-text-body">
+          <span className="font-medium text-text-primary">Want an agent to do this for you?</span>{" "}
+          Paste{" "}
+          <a
+            href="https://github.com/PeonPing/openpeon/blob/main/AUTHOR.md"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-gold hover:underline"
+          >
+            AUTHOR.md
+          </a>{" "}
+          into Claude Code, Codex, Cursor, or opencode and it'll walk you through install → plan → scaffold → validate → publish → register.
+        </p>
+      </div>
 
       <div className="space-y-10">
         {STEPS.map(({ title, content }) => (

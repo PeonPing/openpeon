@@ -6,6 +6,7 @@
     "test:schema": "node --import tsx --test tests/schema-validation.test.ts"
   },
   "devDependencies": {
+    "@types/node": "^25.8.0",
     "ajv": "^8",
     "tsx": "^4.21.0"
   }
