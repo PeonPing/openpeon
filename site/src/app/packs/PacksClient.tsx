@@ -26,7 +26,8 @@ type SortKey =
   | "sounds-asc"
   | "date-desc"
   | "date-asc"
-  | "updated-desc";
+  | "updated-desc"
+  | "quality-desc";
 
 const SORT_OPTIONS: { value: SortKey; label: string }[] = [
   { value: "name-asc", label: "A → Z" },
@@ -36,7 +37,12 @@ const SORT_OPTIONS: { value: SortKey; label: string }[] = [
   { value: "date-desc", label: "Newest" },
   { value: "date-asc", label: "Oldest" },
   { value: "updated-desc", label: "Recently Updated" },
+  { value: "quality-desc", label: "Quality" },
 ];
+
+// Tier order for the quality sort: gold first, silver next, then unreviewed.
+const QUALITY_RANK = (quality?: string) =>
+  quality === "gold" ? 0 : quality === "silver" ? 1 : 2;
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -74,6 +80,16 @@ function sortPacks(packs: PackMeta[], key: SortKey) {
         if (!db) return -1;
         return db.localeCompare(da);
       });
+    case "quality-desc":
+      return sorted.sort((a, b) => {
+        const r = QUALITY_RANK(a.quality) - QUALITY_RANK(b.quality);
+        if (r !== 0) return r;
+        // Within a tier, fall through to the existing newest-first tiebreak.
+        if (!a.dateAdded && !b.dateAdded) return 0;
+        if (!a.dateAdded) return 1;
+        if (!b.dateAdded) return -1;
+        return b.dateAdded.localeCompare(a.dateAdded);
+      });
     default:
       return sorted;
   }
@@ -95,6 +111,9 @@ export function PacksClient({ packs: allPacks, lastUpdated }: { packs: PackMeta[
   );
   const [activeFranchise, setActiveFranchise] = useState<string | null>(
     searchParams.get("franchise") || null,
+  );
+  const [activeQuality, setActiveQuality] = useState<string | null>(
+    searchParams.get("quality") || null,
   );
   const [sortKey, setSortKey] = useState<SortKey>(
     (searchParams.get("sort") as SortKey) || "date-desc",
@@ -164,6 +183,15 @@ export function PacksClient({ packs: allPacks, lastUpdated }: { packs: PackMeta[
     [updateUrl],
   );
 
+  const handleSetQuality = useCallback(
+    (quality: string | null) => {
+      setActiveQuality(quality);
+      setPage(1);
+      updateUrl({ quality, page: null });
+    },
+    [updateUrl],
+  );
+
   const handleSetSort = useCallback(
     (sort: SortKey) => {
       setSortKey(sort);
@@ -182,11 +210,12 @@ export function PacksClient({ packs: allPacks, lastUpdated }: { packs: PackMeta[
     [updateUrl],
   );
 
-  // Derive tag, language, and franchise counts
-  const { allTags, allLangs, allFranchises } = useMemo(() => {
+  // Derive tag, language, franchise, and quality counts
+  const { allTags, allLangs, allFranchises, qualityCounts } = useMemo(() => {
     const tagCounts = new Map<string, number>();
     const langCounts = new Map<string, number>();
     const franchiseCounts = new Map<string, number>();
+    const quality = { gold: 0, silver: 0 };
     for (const p of allPacks) {
       for (const t of p.tags || []) {
         tagCounts.set(t, (tagCounts.get(t) || 0) + 1);
@@ -198,11 +227,14 @@ export function PacksClient({ packs: allPacks, lastUpdated }: { packs: PackMeta[
           (franchiseCounts.get(p.franchise.name) || 0) + 1,
         );
       }
+      if (p.quality === "gold") quality.gold += 1;
+      else if (p.quality === "silver") quality.silver += 1;
     }
     return {
       allTags: [...tagCounts.entries()].sort((a, b) => b[1] - a[1]),
       allLangs: [...langCounts.entries()].sort((a, b) => b[1] - a[1]),
       allFranchises: [...franchiseCounts.entries()].sort((a, b) => b[1] - a[1]),
+      qualityCounts: quality,
     };
   }, [allPacks]);
 
@@ -247,6 +279,9 @@ export function PacksClient({ packs: allPacks, lastUpdated }: { packs: PackMeta[
     if (activeFranchise) {
       packs = packs.filter((p) => p.franchise.name === activeFranchise);
     }
+    if (activeQuality) {
+      packs = packs.filter((p) => p.quality === activeQuality);
+    }
     if (query) {
       const q = query.toLowerCase();
       packs = packs.filter((pack) => {
@@ -267,7 +302,7 @@ export function PacksClient({ packs: allPacks, lastUpdated }: { packs: PackMeta[
     }
 
     return sortPacks(packs, sortKey);
-  }, [allPacks, query, activeTag, activeLang, activeFranchise, sortKey]);
+  }, [allPacks, query, activeTag, activeLang, activeFranchise, activeQuality, sortKey]);
 
   // Pagination
   const totalPages = Math.max(1, Math.ceil(filtered.length / PACKS_PER_PAGE));
@@ -459,6 +494,36 @@ export function PacksClient({ packs: allPacks, lastUpdated }: { packs: PackMeta[
             </div>
           </div>
         )}
+        {/* Quality pills — fixed two options, no overflow affordance */}
+        <div className={expandedFilter ? "md:order-last" : ""}>
+          <span className="font-mono text-[11px] text-text-dim uppercase tracking-wide mb-1.5 block">
+            Quality
+          </span>
+          <div className="flex flex-wrap gap-1.5 rounded-lg border border-surface-border bg-surface-card/50 p-2.5">
+            <FilterPill
+              label="All"
+              count={allPacks.length}
+              active={!activeQuality}
+              onClick={() => handleSetQuality(null)}
+            />
+            <FilterPill
+              label="gold"
+              count={qualityCounts.gold}
+              active={activeQuality === "gold"}
+              onClick={() =>
+                handleSetQuality(activeQuality === "gold" ? null : "gold")
+              }
+            />
+            <FilterPill
+              label="silver"
+              count={qualityCounts.silver}
+              active={activeQuality === "silver"}
+              onClick={() =>
+                handleSetQuality(activeQuality === "silver" ? null : "silver")
+              }
+            />
+          </div>
+        </div>
       </div>
 
       {/* Search + Sort */}

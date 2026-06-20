@@ -284,3 +284,16 @@ export async function fetchAllPacks(): Promise<PackMeta[]> {
   packs.sort((a, b) => a.name.localeCompare(b.name));
   return packs;
 }
+
+// Names of packs hidden from the listing because they graded below the bar.
+// The detail route uses this to render an "under review" tombstone for a
+// bookmarked flagged URL instead of a bare 404. Shares the index fetch with
+// fetchAllPacks (same URL + options), so Next dedupes it within a render.
+export async function fetchFlaggedNames(): Promise<Set<string>> {
+  const res = await fetch(REGISTRY_INDEX_URL, FETCH_OPTIONS);
+  if (!res.ok) return new Set();
+  const index: { packs: RegistryEntry[] } = await res.json();
+  return new Set(
+    index.packs.filter((e) => e.quality === "flagged").map((e) => e.name),
+  );
+}

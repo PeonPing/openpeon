@@ -1,9 +1,10 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import type { Metadata } from "next";
-import { fetchAllPacks } from "@/lib/registry";
+import { fetchAllPacks, fetchFlaggedNames } from "@/lib/registry";
 import { CESP_CATEGORIES } from "@/lib/categories";
 import { CategoryBadge } from "@/components/ui/CategoryBadge";
+import { QualityBadge } from "@/components/ui/QualityBadge";
 import { CodeBlock } from "@/components/ui/CodeBlock";
 import { PackSounds } from "./PackSounds";
 import { ErrorBoundary } from "@/components/ui/ErrorBoundary";
@@ -14,8 +15,16 @@ export const dynamicParams = true;
 export const revalidate = 86400;
 
 export async function generateStaticParams() {
-  const packs = await fetchAllPacks();
-  return packs.map((p) => ({ name: p.name }));
+  const [packs, flagged] = await Promise.all([
+    fetchAllPacks(),
+    fetchFlaggedNames(),
+  ]);
+  // Prebuild flagged names too, so a bookmarked flagged URL renders the
+  // "under review" tombstone statically instead of on demand.
+  return [
+    ...packs.map((p) => ({ name: p.name })),
+    ...[...flagged].map((name) => ({ name })),
+  ];
 }
 
 export async function generateMetadata({
@@ -26,7 +35,10 @@ export async function generateMetadata({
   const { name } = await params;
   const packs = await fetchAllPacks();
   const pack = packs.find((p) => p.name === name);
-  if (!pack) return { title: "Pack Not Found" };
+  if (!pack) {
+    const flagged = await fetchFlaggedNames();
+    return { title: flagged.has(name) ? "Under Review" : "Pack Not Found" };
+  }
   return {
     title: `${pack.displayName}`,
     description: `${pack.displayName} — ${pack.totalSoundCount} sounds across ${pack.categoryNames.length} categories.${pack.franchise.name !== "Unknown" ? ` ${pack.franchise.name} sound pack for PeonPing and other CESP-compatible players.` : " Sound pack for CESP."}`,
@@ -42,7 +54,14 @@ export default async function PackDetailPage({
   const allPacks = await fetchAllPacks();
   const idx = allPacks.findIndex((p) => p.name === name);
   const pack = allPacks[idx];
-  if (!pack) notFound();
+  if (!pack) {
+    // A flagged pack is hidden from the listing but its URL may be bookmarked.
+    // Show an "under review" tombstone rather than a bare 404; a truly unknown
+    // name still 404s.
+    const flagged = await fetchFlaggedNames();
+    if (flagged.has(name)) return <FlaggedTombstone />;
+    notFound();
+  }
   const prev = idx > 0 ? allPacks[idx - 1] : null;
   const next = idx < allPacks.length - 1 ? allPacks[idx + 1] : null;
 
@@ -114,6 +133,7 @@ export default async function PackDetailPage({
 
       {/* Badges */}
       <div className="flex flex-wrap gap-2 mb-8">
+        <QualityBadge quality={pack.quality} size="sm" />
         <span className="rounded-full bg-surface-card border border-surface-border px-3 py-1 text-xs text-text-muted font-mono">
           v{pack.version}
         </span>
@@ -250,6 +270,28 @@ export default async function PackDetailPage({
         ) : (
           <span />
         )}
+      </div>
+    </div>
+  );
+}
+
+function FlaggedTombstone() {
+  return (
+    <div className="mx-auto max-w-5xl px-5 sm:px-6 py-12">
+      <Link
+        href="/packs"
+        className="text-sm text-text-dim hover:text-text-muted transition-colors mb-6 inline-block"
+      >
+        &larr; All packs
+      </Link>
+      <div className="rounded-lg border border-surface-border bg-surface-card p-12 text-center">
+        <h1 className="font-display text-2xl text-text-primary mb-2">
+          Under quality review
+        </h1>
+        <p className="text-text-muted">
+          This pack is being re-checked against our audio quality bar and is
+          temporarily hidden from the listing.
+        </p>
       </div>
     </div>
   );

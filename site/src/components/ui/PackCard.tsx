@@ -3,6 +3,7 @@
 import Link from "next/link";
 import type { PackMeta } from "@/lib/types";
 import { AudioPlayer } from "./AudioPlayer";
+import { QualityBadge } from "./QualityBadge";
 import { StarIcon, VerifiedIcon, CommunityIcon } from "@/components/icons";
 
 const TIER_INFO: Record<string, { color: string; label: string }> = {
@@ -99,6 +100,7 @@ export function PackCard({ pack }: { pack: PackMeta }) {
 
         {/* Badges */}
         <div className="flex flex-wrap gap-1.5">
+          <QualityBadge quality={pack.quality} size="xs" />
           {pack.franchise.name && pack.franchise.name !== "Unknown" && (
             <span className="font-mono text-[10px] px-2 py-0.5 rounded-full uppercase border border-emerald-700/50 text-emerald-400">
               {pack.franchise.name}
