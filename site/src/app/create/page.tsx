@@ -192,7 +192,7 @@ export default function CreatePage() {
           >
             AUTHOR.md
           </a>{" "}
-          into Claude Code, Codex, Cursor, or opencode and it'll walk you through install → plan → scaffold → validate → publish → register.
+          into Claude Code, Codex, Cursor, or opencode and it&apos;ll walk you through install → plan → scaffold → validate → publish → register.
         </p>
       </div>
 
