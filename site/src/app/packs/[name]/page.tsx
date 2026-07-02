@@ -27,6 +27,15 @@ export async function generateStaticParams() {
   ];
 }
 
+function packDescription(pack: {
+  displayName: string;
+  totalSoundCount: number;
+  categoryNames: string[];
+  franchise: { name: string };
+}) {
+  return `${pack.displayName} — ${pack.totalSoundCount} sounds across ${pack.categoryNames.length} categories.${pack.franchise.name !== "Unknown" ? ` ${pack.franchise.name} sound pack for PeonPing and other CESP-compatible players.` : " Sound pack for CESP."}`;
+}
+
 export async function generateMetadata({
   params,
 }: {
@@ -39,9 +48,31 @@ export async function generateMetadata({
     const flagged = await fetchFlaggedNames();
     return { title: flagged.has(name) ? "Under Review" : "Pack Not Found" };
   }
+  // openGraph/twitter don't inherit the page title/description, so without
+  // these blocks shared links fall back to the site-wide card from layout.tsx.
+  const ogTitle = `${pack.displayName} — OpenPeon`;
+  const description = packDescription(pack);
+  const url = `/packs/${pack.name}`;
   return {
     title: `${pack.displayName}`,
-    description: `${pack.displayName} — ${pack.totalSoundCount} sounds across ${pack.categoryNames.length} categories.${pack.franchise.name !== "Unknown" ? ` ${pack.franchise.name} sound pack for PeonPing and other CESP-compatible players.` : " Sound pack for CESP."}`,
+    description,
+    alternates: { canonical: url },
+    openGraph: {
+      type: "website",
+      siteName: "OpenPeon",
+      title: ogTitle,
+      description,
+      url,
+      images: [
+        { url: "/og-image.png", alt: `${pack.displayName} on OpenPeon` },
+      ],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: ogTitle,
+      description,
+      images: ["/og-image.png"],
+    },
   };
 }
 
@@ -76,7 +107,7 @@ export default async function PackDetailPage({
             name: pack.displayName,
             applicationCategory: "DeveloperApplication",
             operatingSystem: "Any",
-            description: `${pack.displayName} — ${pack.totalSoundCount} sounds across ${pack.categoryNames.length} categories.${pack.franchise.name !== "Unknown" ? ` ${pack.franchise.name} sound pack for PeonPing and other CESP-compatible players.` : " Sound pack for CESP."}`,
+            description: packDescription(pack),
             author: {
               "@type": "Person",
               name: pack.author.name || pack.author.github,
