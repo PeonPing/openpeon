@@ -190,14 +190,14 @@ export default function CreatePage() {
           <span className="font-medium text-text-primary">Want an agent to do this for you?</span>{" "}
           Paste{" "}
           <a
-            href="https://github.com/PeonPing/openpeon/blob/main/AUTHOR.md"
+            href="https://github.com/PeonPing/openpeon/blob/main/GENERATE.md"
             target="_blank"
             rel="noopener noreferrer"
             className="text-gold hover:underline"
           >
-            AUTHOR.md
+            GENERATE.md
           </a>{" "}
-          into Claude Code, Codex, Cursor, or opencode and it&apos;ll walk you through install → plan → scaffold → validate → publish → register.
+          into Claude Code, Codex, Cursor, or opencode. It interviews you, then does the whole thing: install, generate or gather the sounds, walk you through approving them, publish the repo, and open the registry PR.
         </p>
       </div>
 
