@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { PreviewClient } from "./PreviewClient";
+import { EvalGateCallout } from "@/components/EvalGateCallout";
 
 export const metadata: Metadata = {
   title: "Pack Preview",
@@ -8,5 +9,12 @@ export const metadata: Metadata = {
 };
 
 export default function PreviewPage() {
-  return <PreviewClient />;
+  return (
+    <>
+      <PreviewClient />
+      <div className="mx-auto max-w-3xl px-5 sm:px-6 pb-12">
+        <EvalGateCallout variant="remix" />
+      </div>
+    </>
+  );
 }
