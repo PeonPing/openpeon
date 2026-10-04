@@ -130,6 +130,8 @@ The [openpeon.com](https://openpeon.com) website lets you browse all registered 
 
 Pack card dates use UTC calendar days and the server's serialized reference year so cached pages and browser rendering agree across timezones and New Year. Run `npm test` from the repo root to verify date rendering alongside schema and documentation checks.
 
+With site dependencies, a production site build, and `agent-browser` installed, run `TSX_TSCONFIG_PATH=site/tsconfig.json node --import tsx --test site/tests/audio-player-layout.test.tsx` from the repo root to check long-label audio players at phone and desktop widths. The regression serves the real components and compiled CSS locally without requiring the live registry.
+
 ## Files
 
 ```

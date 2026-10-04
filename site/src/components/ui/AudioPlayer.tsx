@@ -121,7 +121,7 @@ export function AudioPlayer({
     <button
       onClick={handleClick}
       aria-label={a11yLabel}
-      className={`group flex items-center gap-2 rounded-lg border transition-all duration-200 text-left ${
+      className={`group flex min-w-0 items-center gap-2 rounded-lg border transition-all duration-200 text-left ${
         isPlaying
           ? "border-gold bg-gold-glow shadow-[0_0_12px_rgba(255,171,1,0.2)]"
           : "border-surface-border bg-surface-card hover:border-gold/50"
