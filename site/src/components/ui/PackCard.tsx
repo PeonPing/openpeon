@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import type { PackMeta } from "@/lib/types";
+import { formatPackDate } from "@/lib/pack-dates";
 import { AudioPlayer } from "./AudioPlayer";
 import { QualityBadge } from "./QualityBadge";
 import { StarIcon, VerifiedIcon, CommunityIcon } from "@/components/icons";
@@ -34,22 +35,11 @@ function TierLabel({ tier }: { tier: string }) {
   );
 }
 
-function formatDate(iso: string): { short: string; tooltip: string } {
-  const date = new Date(iso);
-  const now = new Date();
-  const month = date.toLocaleString("en-US", { month: "short" });
-  const day = date.getDate();
-  const year = date.getFullYear();
-  const short =
-    year === now.getFullYear() ? `${month} ${day}` : `${month} ${day}, ${year}`;
-  return { short, tooltip: `${month} ${day}, ${year}` };
-}
-
 function DateDisplay({ pack }: { pack: PackMeta }) {
   const raw = pack.dateUpdated || pack.dateAdded;
   if (!raw) return null;
   const isUpdated = !!pack.dateUpdated;
-  const { short, tooltip } = formatDate(raw);
+  const { short, tooltip } = formatPackDate(raw, pack.dateReferenceYear);
   return (
     <span title={`${isUpdated ? "Updated" : "Added"} ${tooltip}`}>{short}</span>
   );

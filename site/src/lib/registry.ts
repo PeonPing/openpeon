@@ -68,6 +68,7 @@ interface ProcessOpts {
   quality?: "gold" | "silver" | "flagged" | "unreviewed";
   dateAdded?: string;
   dateUpdated?: string;
+  dateReferenceYear: number;
   franchise?: { name: string; url: string };
 }
 
@@ -175,6 +176,7 @@ function processManifest(manifest: Manifest, opts: ProcessOpts): PackMeta {
     sourcePath: opts.sourcePath,
     dateAdded: opts.dateAdded,
     dateUpdated: opts.dateUpdated,
+    dateReferenceYear: opts.dateReferenceYear,
   };
 }
 
@@ -232,6 +234,9 @@ export async function fetchAllPacks(): Promise<PackMeta[]> {
   }
   const index: { packs: RegistryEntry[] } = await res.json();
   const entries = index.packs.filter((e) => e.quality !== "flagged");
+  // Serialize one reference year with the pack data. Cached server HTML and
+  // browser hydration must keep the same short-date text across New Year.
+  const dateReferenceYear = new Date().getUTCFullYear();
 
   const resolved = await mapWithConcurrency(
     entries,
@@ -265,6 +270,7 @@ export async function fetchAllPacks(): Promise<PackMeta[]> {
           quality: entry.quality,
           dateAdded: entry.added,
           dateUpdated: entry.updated,
+          dateReferenceYear,
           franchise: entry.franchise,
         });
       } catch (err) {

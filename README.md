@@ -128,6 +128,8 @@ Packs are hosted in their own repos. Official packs are in [PeonPing/og-packs](h
 
 The [openpeon.com](https://openpeon.com) website lets you browse all registered packs with audio previews, filterable by tag, language, and trust tier (official/community). It also includes an [integration guide](https://openpeon.com/integrate) for adding CESP support to any CLI. Source is in `site/`.
 
+Pack card dates use UTC calendar days and the server's serialized reference year so cached pages and browser rendering agree across timezones and New Year. Run `npm test` from the repo root to verify date rendering alongside schema and documentation checks.
+
 ## Files
 
 ```

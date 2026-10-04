@@ -35,4 +35,5 @@ export interface PackMeta {
   sourcePath?: string;
   dateAdded?: string;
   dateUpdated?: string;
+  dateReferenceYear: number;
 }
